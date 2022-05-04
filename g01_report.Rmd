@@ -44,9 +44,9 @@ opts_knit$set(width=80)
 * Turma: T62
 * Grupo: G01/T62
 * Autores
-    + 20191393 Ana Catarina Quintans
-    + 20190048 Carlos Chantre
-    + 20181339    Pedro Amaral
+    + 20191393 Ana Catarina Quintans - General Manager
+    + 20190048 Carlos Chantre - Tech Lead
+    + 20181339 Pedro Amaral - Market Analyst
 
 
 ## Introdução
@@ -94,9 +94,9 @@ Os clientes tem rendimeto baixo.
 
 ### 1. dimensão `calendar` 
 
-Esta dimensão corresponde ao calendário que contém informação relativa ao tempo em que são realizadas as transações comerciais.
+Informação de calendário.
  
- + **ID**: Constituí-se como a Surrogate Key (chave artificial).
+ + **ID**: Constitui-se como a Surrogate Key (chave artificial).
  + **Date**: Contempla as datas ( dia, mês e ano) em que se realizaram transações.
  + **DayNumberOfWeek**:Identifica numericamente o dia da semana.
  + **DayName**: Identifica, à semelhança do anterior, mas textualmente.
@@ -109,6 +109,8 @@ Esta dimensão corresponde ao calendário que contém informação relativa ao t
  + **DayNumberOfMonth**: Identifica o dia do mês.
  
 ### 2. dimensão `product`
+
+Inform
  
  + **ProductKey**: Chave que identifica o produto (numeric).
  + **ProductSubCategoryKey**: Chave que identifica a sub-categoria do produto (numeric).
