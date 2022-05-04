@@ -1,7 +1,7 @@
 ---
 title: "Report BI 2021/2022"
 date: "`r Sys.Date()`"
-author: 2022001, 2022002
+author: 20191393, 20190048, 20181339
 output:
   rmdformats::robobook:
     code_folding: show
@@ -99,8 +99,8 @@ Informação de calendário.
  + **ID**: Constitui-se como a Surrogate Key (chave artificial).
  + **Date**: Contempla as datas ( dia, mês e ano) em que se realizaram transações.
  + **DayNumberOfWeek**:Identifica numericamente o dia da semana.
- + **DayName**: Identifica, à semelhança do anterior, mas textualmente.
- + **MonthName**: Identifica o mês textualmente.
+ + **DayName**: Identifica textualmente o dia da semana.
+ + **MonthName**: Identifica textualmente o mês.
  + **MonthNumberOfYear**: Identifica o mês numericamente.
  + **DayNumberOfYear**: Identifica o dia do ano num formato de 365 dias.
  + **WeekNumberOfYear**: Identifica a semana numericamente.
@@ -110,14 +110,14 @@ Informação de calendário.
  
 ### 2. dimensão `product`
 
-Inform
+Informação sobre o produto.
  
  + **ProductKey**: Chave que identifica o produto (numeric).
  + **ProductSubCategoryKey**: Chave que identifica a sub-categoria do produto (numeric).
  + **ProductName**: Nome do produto.
  + **StandarCost**: Custo de fabrico.
  + **Color**: Cor do produto.
- + **SafetyStockLevel**: Minimo que a empresa necessita de ter em stock.
+ + **SafetyStockLevel**: Stock mínimo.
  + **ListPrice**: Preço de venda dos produtos.
  + **Size**: Tamanho do produto.
  + **DaysToManufacture**: Dias para produzir.
@@ -128,10 +128,12 @@ Inform
  + **Status**: Disponibilidade para vender.
  + **SubCategory**: Sub-categoria.
  + **Category**: Categoria.
- + **StartDate**: Desde quando está disponível os produtos para vender.
- + **EndDate**: Quando é que os produtos deixaram de estar disponiveis para venda.
+ + **StartDate**: Desde quando o produto está disponível para vender.
+ + **EndDate**: Desde quando o produto deixou de estar disponivel para venda.
  
 ### 3. dimensão `productCategory`
+
+Informação sobre a categoria do produto.
 
  + **ProductCategoryKey**: Chave que identifica univocamente o produto.
  + **EnglishProductCategoryName**: Nome da categoria do produto em Inglês.
@@ -139,6 +141,8 @@ Inform
  + **FrenchProductCategoryName**: Nome da categoria do produto em Francês.
 
 ### 4. dimensão `productSubCategory`
+
+Informação sobre a sub-categoria do produto.
 
  + **ProductCategoryKey**: Chave que identifica univocamente o produto.
  + **ProductSubCategoryKey**: Chave que identifica a sub-categoria do produto (numeric).
@@ -148,42 +152,48 @@ Inform
  
 ### 5. dimensão `customers`
 
- + **CustomerKey**: Chave que identifca os cliente.
- + **GeographyKey**: Chave que indentifica a cidade/código-postal dos clientes.
- + **Name**: Nomes dos clientes.
- + **BirthDate**: Data de nascimento dos clientes.
- + **MaritalStatus**: Estado-civil dos clientes.
- + **Gender**: Genero dos Clientes.
- + **YearlyIncome**: Nível de rendimento dos clientes.
- + **NumberChildrenAtHome**: Número de crianças em casa.
- + **Occupation**: Profissão dos clientes.
- + **HouseOwnerFlag**: Se o cliente é proprietário ou não de casa. (factor?)
- + **NumberCarsOwned**: Quantos carros possuem.
- + **AddressLine**: Morada dos clientes.
- + **Phone**: Número de telefone dos clientes.
+Informação sobre os clientes.
+
+ + **CustomerKey**: Chave que identifica o cliente.
+ + **GeographyKey**: Chave que identifica a cidade/código-postal do cliente.
+ + **Name**: Nome do cliente.
+ + **BirthDate**: Data de nascimento do cliente.
+ + **MaritalStatus**: Estado-civil do cliente.
+ + **Gender**: Género do Cliente.
+ + **YearlyIncome**: Nível de rendimento do cliente.
+ + **NumberChildrenAtHome**: Número de crianças do cliente.
+ + **Occupation**: Profissão do cliente.
+ + **HouseOwnerFlag**: Se o cliente é proprietário ou não de habitação. (factor?)
+ + **NumberCarsOwned**: Quantos carros cliente possui.
+ + **AddressLine**: Morada do cliente.
+ + **Phone**: Número de telefone do cliente.
  + **DateFirstPurchase**: Data da primeira compra.
  
 ### 6. dimensão `territory`
 
+Informação geográfica.
+
  + **TERRITORY DIMENSION**: Dimensão do território.
  + **Territory Key**: Chave que identifica o território.
  + **Region**: Região.
- + **Country**: Pais.
+ + **Country**: País.
  + **Group**: Região económica.
   
 ### 7. dimensão `factsales`
 
+Tabela de factos [Vendas]
+
  + **OrderDateKey**: Chave que identifica a data da compra.
  + **ProductKey**: Chave que identifica o produto (numeric).
- + **CustomerKey**: Chave que identifca os cliente.
+ + **CustomerKey**: Chave que identifica o cliente.
  + **SalesTerritoryKey**: Chave que identifica o território onde se realizou a compra.
  + **SalesOrderNumber**: Número que identifica a venda.
- + **SalesOrderLineNumber**: Número que idetifica 
+ + **SalesOrderLineNumber**: Número que identifica as transações numa venda. 
  + **OrderQuantity**: Quantidade transacionada.
  + **UnitPrice**: Preço unitário.
  + **ProductStandardCost**: O custo do produto para a empresa.
  + **SalesAmount**: Preço da transação.
- + **TaxAmt**: Imposto pago da venda.
+ + **TaxAmt**: Imposto sobre a venda.
  + **Freight**: Custo de envio.
  + **RegionMonthID**: Informação sobre quando (mês) foi realizada a venda e em que região.
  
