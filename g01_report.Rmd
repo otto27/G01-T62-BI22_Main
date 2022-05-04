@@ -1,0 +1,197 @@
+---
+title: "Report BI 2021/2022"
+date: "`r Sys.Date()`"
+author: 2022001, 2022002
+output:
+  rmdformats::robobook:
+    code_folding: show
+    toc: 3
+    thumbnails: false
+    lightbox: true
+    gallery: false
+    cache: false
+    highlight: kate
+---
+
+
+```{r config, include=FALSE}
+# bibliotecas --- modificar sempre que acrescentar uma biblioteca
+bibliotecas <- c("knitr", "rmdformats", "readxl", "lubridate", "ggplot2", "DT")
+for (bibl in bibliotecas) {
+    if (bibl %in% rownames(installed.packages()) == FALSE){
+        install.packages(bibl, dependencies = TRUE)
+        library(bibl, character.only = TRUE)    
+    }
+     else {
+        library(bibl, character.only = TRUE)
+     }
+}
+rm(bibl, bibliotecas)
+
+# knit: opções globais --- não modificar!
+options(max.print="80")
+opts_chunk$set(echo=FALSE,
+	           cache=FALSE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=TRUE)
+opts_knit$set(width=80)
+```
+
+## Autores
+* Turma: T62
+* Grupo: G01/T62
+* Autores
+    + 20191393 Ana Catarina Quintans
+    + 20190048 Carlos Chantre
+    + 20181339    Pedro Amaral
+
+
+## Introdução
+Era uma vez, um lobo mau ...  
+
+
+
+
+## Marketing
+
+Mostra-se um exemplo de código incluído neste ficheiro que produz o relatório!
+
+```{r M1}
+if (file.exists("customers.Rda") == FALSE) {
+   cat("Dude, é preciso construir o dataframe customers!")
+} else {
+        load("customers.Rda")
+}
+```
+
+
+### Perfil dos clientes
+
+Apresentam-se algumas características dos clientes ...
+
++ __Rendimento__  
+    
+Os clientes tem rendimeto baixo.   
+
++ __Género__
+
+```{r G1, eval = TRUE, echo = TRUE}
+load("customers.Rda")
+plot(as.factor(customers$MaritalStatus))
+```
+
+
++ __Conclusões__
+
+Os clientes tem rendimeto baixo.
+
+# Apêndice
+
+## Dicionário do _data mart_
+
+### 1. dimensão `calendar` 
+
+Esta dimensão corresponde ao calendário que contém informação relativa ao tempo em que são realizadas as transações comerciais.
+ 
+ + **ID**: Constituí-se como a Surrogate Key (chave artificial).
+ + **Date**: Contempla as datas ( dia, mês e ano) em que se realizaram transações.
+ + **DayNumberOfWeek**:Identifica numericamente o dia da semana.
+ + **DayName**: Identifica, à semelhança do anterior, mas textualmente.
+ + **MonthName**: Identifica o mês textualmente.
+ + **MonthNumberOfYear**: Identifica o mês numericamente.
+ + **DayNumberOfYear**: Identifica o dia do ano num formato de 365 dias.
+ + **WeekNumberOfYear**: Identifica a semana numericamente.
+ + **CalendarQuarter**: Refere o trimestre em que se realizou a transação.
+ + **CalendarYear**: Refere o ano.
+ + **DayNumberOfMonth**: Identifica o dia do mês.
+ 
+### 2. dimensão `product`
+ 
+ + **ProductKey**: Chave que identifica o produto (numeric).
+ + **ProductSubCategoryKey**: Chave que identifica a sub-categoria do produto (numeric).
+ + **ProductName**: Nome do produto.
+ + **StandarCost**: Custo de fabrico.
+ + **Color**: Cor do produto.
+ + **SafetyStockLevel**: Minimo que a empresa necessita de ter em stock.
+ + **ListPrice**: Preço de venda dos produtos.
+ + **Size**: Tamanho do produto.
+ + **DaysToManufacture**: Dias para produzir.
+ + **DealerPrice**: Preço de venda para revendedores.
+ + **Class**: Classe de produto.
+ + **ModelName**: Nome do modelo do produto.
+ + **Description**: Descrição do produto.
+ + **Status**: Disponibilidade para vender.
+ + **SubCategory**: Sub-categoria.
+ + **Category**: Categoria.
+ + **StartDate**: Desde quando está disponível os produtos para vender.
+ + **EndDate**: Quando é que os produtos deixaram de estar disponiveis para venda.
+ 
+### 3. dimensão `productCategory`
+
+ + **ProductCategoryKey**: Chave que identifica univocamente o produto.
+ + **EnglishProductCategoryName**: Nome da categoria do produto em Inglês.
+ + **SpanishProductCategoryName**: Nome da categoria do produto em Espanhol.
+ + **FrenchProductCategoryName**: Nome da categoria do produto em Francês.
+
+### 4. dimensão `productSubCategory`
+
+ + **ProductCategoryKey**: Chave que identifica univocamente o produto.
+ + **ProductSubCategoryKey**: Chave que identifica a sub-categoria do produto (numeric).
+ + **EnglishProductSubCategoryName**: Nome da sub-categoria do produto em Inglês.
+ + **SpanishProductSubCategoryName**: Nome da sub-categoria do produto em Espanhol.
+ + **FrenchProductSubCategoryName**: Nome da sub-categoria do produto em Francês.
+ 
+### 5. dimensão `customers`
+
+ + **CustomerKey**: Chave que identifca os cliente.
+ + **GeographyKey**: Chave que indentifica a cidade/código-postal dos clientes.
+ + **Name**: Nomes dos clientes.
+ + **BirthDate**: Data de nascimento dos clientes.
+ + **MaritalStatus**: Estado-civil dos clientes.
+ + **Gender**: Genero dos Clientes.
+ + **YearlyIncome**: Nível de rendimento dos clientes.
+ + **NumberChildrenAtHome**: Número de crianças em casa.
+ + **Occupation**: Profissão dos clientes.
+ + **HouseOwnerFlag**: Se o cliente é proprietário ou não de casa. (factor?)
+ + **NumberCarsOwned**: Quantos carros possuem.
+ + **AddressLine**: Morada dos clientes.
+ + **Phone**: Número de telefone dos clientes.
+ + **DateFirstPurchase**: Data da primeira compra.
+ 
+### 6. dimensão `territory`
+
+ + **TERRITORY DIMENSION**: Dimensão do território.
+ + **Territory Key**: Chave que identifica o território.
+ + **Region**: Região.
+ + **Country**: Pais.
+ + **Group**: Região económica.
+  
+### 7. dimensão `factsales`
+
+ + **OrderDateKey**: Chave que identifica a data da compra.
+ + **ProductKey**: Chave que identifica o produto (numeric).
+ + **CustomerKey**: Chave que identifca os cliente.
+ + **SalesTerritoryKey**: Chave que identifica o território onde se realizou a compra.
+ + **SalesOrderNumber**: Número que identifica a venda.
+ + **SalesOrderLineNumber**: Número que idetifica 
+ + **OrderQuantity**: Quantidade transacionada.
+ + **UnitPrice**: Preço unitário.
+ + **ProductStandardCost**: O custo do produto para a empresa.
+ + **SalesAmount**: Preço da transação.
+ + **TaxAmt**: Imposto pago da venda.
+ + **Freight**: Custo de envio.
+ + **RegionMonthID**: Informação sobre quando (mês) foi realizada a venda e em que região.
+ 
+
+
+
+
+
+
+
+
+
+
