@@ -50,7 +50,7 @@ opts_knit$set(width=80)
 
 
 ## Introdução
-Inserir [Introdução] 
+Inserir introdução...
 
 
 
@@ -90,9 +90,9 @@ Os clientes tem rendimeto baixo.
 
 # Apêndice
 
-## Dicionário do _data mart_
+## Dicionário do __Data Mart__
 
-### 1. dimensão `calendar` 
+## 1.`calendar` 
 
 Informação de calendário.
  
@@ -108,7 +108,7 @@ Informação de calendário.
  + **CalendarYear**: Refere o ano.
  + **DayNumberOfMonth**: Identifica o dia do mês.
  
-### 2. dimensão `product`
+## 2.`product`
 
 Informação sobre o produto.
  
@@ -131,7 +131,7 @@ Informação sobre o produto.
  + **StartDate**: Desde quando o produto está disponível para vender.
  + **EndDate**: Desde quando o produto deixou de estar disponivel para venda.
  
-### 3. dimensão `productCategory`
+## 3.`productCategory`
 
 Informação sobre a categoria do produto.
 
@@ -140,7 +140,7 @@ Informação sobre a categoria do produto.
  + **SpanishProductCategoryName**: Nome da categoria do produto em Espanhol.
  + **FrenchProductCategoryName**: Nome da categoria do produto em Francês.
 
-### 4. dimensão `productSubCategory`
+## 4.`productSubCategory`
 
 Informação sobre a sub-categoria do produto.
 
@@ -150,7 +150,7 @@ Informação sobre a sub-categoria do produto.
  + **SpanishProductSubCategoryName**: Nome da sub-categoria do produto em Espanhol.
  + **FrenchProductSubCategoryName**: Nome da sub-categoria do produto em Francês.
  
-### 5. dimensão `customers`
+## 5.`customers`
 
 Informação sobre os clientes.
 
@@ -169,7 +169,7 @@ Informação sobre os clientes.
  + **Phone**: Número de telefone do cliente.
  + **DateFirstPurchase**: Data da primeira compra.
  
-### 6. dimensão `territory`
+## 6.`territory`
 
 Informação geográfica.
 
@@ -179,7 +179,7 @@ Informação geográfica.
  + **Country**: País.
  + **Group**: Região económica.
   
-### 7. dimensão `factsales`
+## 7.`factsales`
 
 Tabela de factos [Vendas]
 
