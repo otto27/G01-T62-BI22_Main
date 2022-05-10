@@ -83,6 +83,29 @@ plot(as.factor(customers$MaritalStatus))
 
 Os clientes tem rendimeto baixo.
 
+# Propostas para análise
+## Departamento de Marketing
+### Clientes
+#### Qual o perfil do nosso cliente mais rentável? E do menos rentável?
+#### Que variáveis dos clientes interferem positivamente no consumo das nossas bicicletas?
+
+### Produto
+#### O que é que se vende mais? De que categoria? De que subcategoria?
+#### Os novos produtos estão a vender mais ou menos que os anteriores?
+
+### Região
+#### Onde é que se vendeu mais?
+#### Em que alturas é que se vende mais? Existe sazonalidade?
+
+## Departamento de Vendas
+### Produto
+#### -Quais os canais de vendas com mais escoabilidade de produtos?
+
+
+## Departamento Financeiro
+### Produto
+#### Saber quais são os produtos com maior rentabilidade?
+
 # Apêndice
 
 ## Dicionário do **Data Mart**
