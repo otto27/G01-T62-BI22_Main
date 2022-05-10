@@ -1,7 +1,7 @@
 ---
 title: "Report BI 2021/2022 - Grupo 1"
 date: "`r Sys.Date()`"
-author: 20191393, 20190048, 20181339
+author: 20191393, 20190047, 20181339
 output:
   rmdformats::robobook:
     code_folding: show
