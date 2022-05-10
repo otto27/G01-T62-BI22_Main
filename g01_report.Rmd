@@ -13,7 +13,6 @@ output:
     highlight: kate
 ---
 
-
 ```{r config, include=FALSE}
 # bibliotecas --- modificar sempre que acrescentar uma biblioteca
 bibliotecas <- c("knitr", "rmdformats", "readxl", "lubridate", "ggplot2", "DT")
@@ -41,19 +40,17 @@ opts_knit$set(width=80)
 ```
 
 ## Autores
-* Turma: T62
-* Grupo: G01/T62
-* Autores
-    + 20191393 Ana Catarina Quintans - General Manager
-    + 20190048 Carlos Chantre - Tech Lead
-    + 20181339 Pedro Amaral - Market Analyst
 
+-   Turma: T62
+-   Grupo: G01/T62
+-   Autores
+    -   20191393 Ana Catarina Quintans - General Manager
+    -   20190048 Carlos Chantre - Tech Lead
+    -   20181339 Pedro Amaral - Market Analyst
 
 ## Introdução
+
 Inserir introdução...
-
-
-
 
 ## Marketing
 
@@ -67,143 +64,130 @@ if (file.exists("customers.Rda") == FALSE) {
 }
 ```
 
-
 ### Perfil dos clientes
 
 Apresentam-se algumas características dos clientes ...
 
-+ __Rendimento__  
-    
-Os clientes tem rendimeto baixo.   
+-   **Rendimento**
 
-+ __Género__
+Os clientes tem rendimeto baixo.
+
+-   **Género**
 
 ```{r G1, eval = TRUE, echo = TRUE}
 load("customers.Rda")
 plot(as.factor(customers$MaritalStatus))
 ```
 
-
-+ __Conclusões__
+-   **Conclusões**
 
 Os clientes tem rendimeto baixo.
 
 # Apêndice
 
-## Dicionário do __Data Mart__
+## Dicionário do **Data Mart**
 
-## 1.`calendar` 
+## 1.`calendar`
 
 Informação de calendário.
- 
- + **ID**: Constitui-se como a Surrogate Key (chave artificial).
- + **Date**: Contempla as datas ( dia, mês e ano) em que se realizaram transações.
- + **DayNumberOfWeek**:Identifica numericamente o dia da semana.
- + **DayName**: Identifica textualmente o dia da semana.
- + **MonthName**: Identifica textualmente o mês.
- + **MonthNumberOfYear**: Identifica o mês numericamente.
- + **DayNumberOfYear**: Identifica o dia do ano num formato de 365 dias.
- + **WeekNumberOfYear**: Identifica a semana numericamente.
- + **CalendarQuarter**: Refere o trimestre em que se realizou a transação.
- + **CalendarYear**: Refere o ano.
- + **DayNumberOfMonth**: Identifica o dia do mês.
- 
+
+-   **ID**: Constitui-se como a Surrogate Key (chave artificial).
+-   **Date**: Contempla as datas ( dia, mês e ano) em que se realizaram transações.
+-   **DayNumberOfWeek**:Identifica numericamente o dia da semana.
+-   **DayName**: Identifica textualmente o dia da semana.
+-   **MonthName**: Identifica textualmente o mês.
+-   **MonthNumberOfYear**: Identifica o mês numericamente.
+-   **DayNumberOfYear**: Identifica o dia do ano num formato de 365 dias.
+-   **WeekNumberOfYear**: Identifica a semana numericamente.
+-   **CalendarQuarter**: Refere o trimestre em que se realizou a transação.
+-   **CalendarYear**: Refere o ano.
+-   **DayNumberOfMonth**: Identifica o dia do mês.
+
 ## 2.`product`
 
 Informação sobre o produto.
- 
- + **ProductKey**: Chave que identifica o produto (numeric).
- + **ProductSubCategoryKey**: Chave que identifica a sub-categoria do produto (numeric).
- + **ProductName**: Nome do produto.
- + **StandarCost**: Custo de fabrico.
- + **Color**: Cor do produto.
- + **SafetyStockLevel**: Stock mínimo.
- + **ListPrice**: Preço de venda dos produtos.
- + **Size**: Tamanho do produto.
- + **DaysToManufacture**: Dias para produzir.
- + **DealerPrice**: Preço de venda para revendedores.
- + **Class**: Classe de produto.
- + **ModelName**: Nome do modelo do produto.
- + **Description**: Descrição do produto.
- + **Status**: Disponibilidade para vender.
- + **SubCategory**: Sub-categoria.
- + **Category**: Categoria.
- + **StartDate**: Desde quando o produto está disponível para vender.
- + **EndDate**: Desde quando o produto deixou de estar disponivel para venda.
- 
+
+-   **ProductKey**: Chave que identifica o produto (numeric).
+-   **ProductSubCategoryKey**: Chave que identifica a sub-categoria do produto (numeric).
+-   **ProductName**: Nome do produto.
+-   **StandarCost**: Custo de fabrico.
+-   **Color**: Cor do produto.
+-   **SafetyStockLevel**: Stock mínimo.
+-   **ListPrice**: Preço de venda dos produtos.
+-   **Size**: Tamanho do produto.
+-   **DaysToManufacture**: Dias para produzir.
+-   **DealerPrice**: Preço de venda para revendedores.
+-   **Class**: Classe de produto.
+-   **ModelName**: Nome do modelo do produto.
+-   **Description**: Descrição do produto.
+-   **Status**: Disponibilidade para vender.
+-   **SubCategory**: Sub-categoria.
+-   **Category**: Categoria.
+-   **StartDate**: Desde quando o produto está disponível para vender.
+-   **EndDate**: Desde quando o produto deixou de estar disponivel para venda.
+
 ## 3.`productCategory`
 
 Informação sobre a categoria do produto.
 
- + **ProductCategoryKey**: Chave que identifica univocamente o produto.
- + **EnglishProductCategoryName**: Nome da categoria do produto em Inglês.
- + **SpanishProductCategoryName**: Nome da categoria do produto em Espanhol.
- + **FrenchProductCategoryName**: Nome da categoria do produto em Francês.
+-   **ProductCategoryKey**: Chave que identifica univocamente o produto.
+-   **EnglishProductCategoryName**: Nome da categoria do produto em Inglês.
+-   **SpanishProductCategoryName**: Nome da categoria do produto em Espanhol.
+-   **FrenchProductCategoryName**: Nome da categoria do produto em Francês.
 
 ## 4.`productSubCategory`
 
 Informação sobre a sub-categoria do produto.
 
- + **ProductCategoryKey**: Chave que identifica univocamente o produto.
- + **ProductSubCategoryKey**: Chave que identifica a sub-categoria do produto (numeric).
- + **EnglishProductSubCategoryName**: Nome da sub-categoria do produto em Inglês.
- + **SpanishProductSubCategoryName**: Nome da sub-categoria do produto em Espanhol.
- + **FrenchProductSubCategoryName**: Nome da sub-categoria do produto em Francês.
- 
+-   **ProductCategoryKey**: Chave que identifica univocamente o produto.
+-   **ProductSubCategoryKey**: Chave que identifica a sub-categoria do produto (numeric).
+-   **EnglishProductSubCategoryName**: Nome da sub-categoria do produto em Inglês.
+-   **SpanishProductSubCategoryName**: Nome da sub-categoria do produto em Espanhol.
+-   **FrenchProductSubCategoryName**: Nome da sub-categoria do produto em Francês.
+
 ## 5.`customers`
 
 Informação sobre os clientes.
 
- + **CustomerKey**: Chave que identifica o cliente.
- + **GeographyKey**: Chave que identifica a cidade/código-postal do cliente.
- + **Name**: Nome do cliente.
- + **BirthDate**: Data de nascimento do cliente.
- + **MaritalStatus**: Estado-civil do cliente.
- + **Gender**: Género do Cliente.
- + **YearlyIncome**: Nível de rendimento do cliente.
- + **NumberChildrenAtHome**: Número de crianças do cliente.
- + **Occupation**: Profissão do cliente.
- + **HouseOwnerFlag**: Se o cliente é proprietário ou não de habitação. (factor?)
- + **NumberCarsOwned**: Quantos carros cliente possui.
- + **AddressLine**: Morada do cliente.
- + **Phone**: Número de telefone do cliente.
- + **DateFirstPurchase**: Data da primeira compra.
- 
+-   **CustomerKey**: Chave que identifica o cliente.
+-   **GeographyKey**: Chave que identifica a cidade/código-postal do cliente.
+-   **Name**: Nome do cliente.
+-   **BirthDate**: Data de nascimento do cliente.
+-   **MaritalStatus**: Estado-civil do cliente.
+-   **Gender**: Género do Cliente.
+-   **YearlyIncome**: Nível de rendimento do cliente.
+-   **NumberChildrenAtHome**: Número de crianças do cliente.
+-   **Occupation**: Profissão do cliente.
+-   **HouseOwnerFlag**: Se o cliente é proprietário ou não de habitação. (factor?)
+-   **NumberCarsOwned**: Quantos carros cliente possui.
+-   **AddressLine**: Morada do cliente.
+-   **Phone**: Número de telefone do cliente.
+-   **DateFirstPurchase**: Data da primeira compra.
+
 ## 6.`territory`
 
 Informação geográfica.
 
- + **TERRITORY DIMENSION**: Dimensão do território.
- + **Territory Key**: Chave que identifica o território.
- + **Region**: Região.
- + **Country**: País.
- + **Group**: Região económica.
-  
+-   **TERRITORY DIMENSION**: Dimensão do território.
+-   **Territory Key**: Chave que identifica o território.
+-   **Region**: Região.
+-   **Country**: País.
+-   **Group**: Região económica.
+
 ## 7.`factsales`
 
 Tabela de factos [Vendas]
 
- + **OrderDateKey**: Chave que identifica a data da compra.
- + **ProductKey**: Chave que identifica o produto (numeric).
- + **CustomerKey**: Chave que identifica o cliente.
- + **SalesTerritoryKey**: Chave que identifica o território onde se realizou a compra.
- + **SalesOrderNumber**: Número que identifica a venda.
- + **SalesOrderLineNumber**: Número que identifica as transações numa venda. 
- + **OrderQuantity**: Quantidade transacionada.
- + **UnitPrice**: Preço unitário.
- + **ProductStandardCost**: O custo do produto para a empresa.
- + **SalesAmount**: Preço da transação.
- + **TaxAmt**: Imposto sobre a venda.
- + **Freight**: Custo de envio.
- + **RegionMonthID**: Informação sobre quando (mês) foi realizada a venda e em que região.
- 
-
-
-
-
-
-
-
-
-
-
+-   **OrderDateKey**: Chave que identifica a data da compra.
+-   **ProductKey**: Chave que identifica o produto (numeric).
+-   **CustomerKey**: Chave que identifica o cliente.
+-   **SalesTerritoryKey**: Chave que identifica o território onde se realizou a compra.
+-   **SalesOrderNumber**: Número que identifica a venda.
+-   **SalesOrderLineNumber**: Número que identifica as transações numa venda.
+-   **OrderQuantity**: Quantidade transacionada.
+-   **UnitPrice**: Preço unitário.
+-   **ProductStandardCost**: O custo do produto para a empresa.
+-   **SalesAmount**: Preço da transação.
+-   **TaxAmt**: Imposto sobre a venda.
+-   **Freight**: Custo de envio.
+-   **RegionMonthID**: Informação sobre quando (mês) foi realizada a venda e em que região.
