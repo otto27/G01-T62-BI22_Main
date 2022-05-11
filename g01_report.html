@@ -7,7 +7,7 @@
 
         <meta name="author" content="20191393, 20190048, 20181339" />
     
-        <meta name="date" content="2022-05-10" />
+        <meta name="date" content="2022-05-11" />
     
     <title>Report BI 2021/2022 - Grupo 1</title>
 
@@ -1961,7 +1961,7 @@ src: url(data:application/font-sfnt;base64,AAEAAAARAQAABAAQR0RFRgs+Cz8AAjwQAAAAQ
           <li class="divider"></li>
                                 <li><span><i class="glyphicon glyphicon-user"></i> 20191393,
 20190048, 20181339</span></li>
-                                         <li><span><i class="glyphicon glyphicon-calendar"></i> 2022-05-10</span></li>
+                                         <li><span><i class="glyphicon glyphicon-calendar"></i> 2022-05-11</span></li>
                   </ul>     
       </div>
       <div class="book-body fixed">
@@ -2096,22 +2096,24 @@ anteriores?</h4>
 <li><strong>ID</strong>: Constitui-se como a Surrogate Key (chave
 artificial).</li>
 <li><strong>Date</strong>: Contempla as datas ( dia, mês e ano) em que
-se realizaram transações.</li>
+se realizaram transações (<em>date</em>)</li>
 <li><strong>DayNumberOfWeek</strong>:Identifica numericamente o dia da
-semana.</li>
-<li><strong>DayName</strong>: Identifica textualmente o dia da
-semana.</li>
-<li><strong>MonthName</strong>: Identifica textualmente o mês.</li>
+semana. (<em>numeric</em>)</li>
+<li><strong>DayName</strong>: Identifica textualmente o dia da semana.
+(<em>string</em>)</li>
+<li><strong>MonthName</strong>: Identifica textualmente o
+mês.(<em>string</em>)</li>
 <li><strong>MonthNumberOfYear</strong>: Identifica o mês
-numericamente.</li>
+numericamente.(<em>numeric</em>)</li>
 <li><strong>DayNumberOfYear</strong>: Identifica o dia do ano num
-formato de 365 dias.</li>
+formato de 365 dias. (<em>numeric</em>)</li>
 <li><strong>WeekNumberOfYear</strong>: Identifica a semana
-numericamente.</li>
+numericamente.(<em>numeric</em>)</li>
 <li><strong>CalendarQuarter</strong>: Refere o trimestre em que se
-realizou a transação.</li>
-<li><strong>CalendarYear</strong>: Refere o ano.</li>
-<li><strong>DayNumberOfMonth</strong>: Identifica o dia do mês.</li>
+realizou a transação. (<em>numeric</em>)</li>
+<li><strong>CalendarYear</strong>: Refere o ano.(<em>numeric</em>)</li>
+<li><strong>DayNumberOfMonth</strong>: Identifica o dia do
+mês.(<em>numeric</em>)</li>
 </ul>
 </div>
 <div id="product" class="section level2">
@@ -2119,27 +2121,35 @@ realizou a transação.</li>
 <p>Informação sobre o produto.</p>
 <ul>
 <li><strong>ProductKey</strong>: Chave que identifica o produto
-(numeric).</li>
+(<em>factor</em>).</li>
 <li><strong>ProductSubCategoryKey</strong>: Chave que identifica a
-sub-categoria do produto (numeric).</li>
-<li><strong>ProductName</strong>: Nome do produto.</li>
-<li><strong>StandarCost</strong>: Custo de fabrico.</li>
-<li><strong>Color</strong>: Cor do produto.</li>
-<li><strong>SafetyStockLevel</strong>: Stock mínimo.</li>
-<li><strong>ListPrice</strong>: Preço de venda dos produtos.</li>
-<li><strong>Size</strong>: Tamanho do produto.</li>
-<li><strong>DaysToManufacture</strong>: Dias para produzir.</li>
-<li><strong>DealerPrice</strong>: Preço de venda para revendedores.</li>
-<li><strong>Class</strong>: Classe de produto.</li>
-<li><strong>ModelName</strong>: Nome do modelo do produto.</li>
-<li><strong>Description</strong>: Descrição do produto.</li>
-<li><strong>Status</strong>: Disponibilidade para vender.</li>
-<li><strong>SubCategory</strong>: Sub-categoria.</li>
-<li><strong>Category</strong>: Categoria.</li>
+sub-categoria do produto (<em>factor</em>).</li>
+<li><strong>ProductName</strong>: Nome do produto.(<em>string</em>)</li>
+<li><strong>StandarCost</strong>: Custo de fabrico.
+(<em>numeric</em>)</li>
+<li><strong>Color</strong>: Cor do produto. (<em>string</em>)</li>
+<li><strong>SafetyStockLevel</strong>: Stock
+mínimo.(<em>numeric</em>)</li>
+<li><strong>ListPrice</strong>: Preço de venda dos produtos.
+(<em>numeric</em>)</li>
+<li><strong>Size</strong>: Tamanho do produto.(<em>numeric</em>)</li>
+<li><strong>DaysToManufacture</strong>: Dias para
+produzir.(<em>numeric</em>)</li>
+<li><strong>DealerPrice</strong>: Preço de venda para
+revendedores.(<em>numeric</em>)</li>
+<li><strong>Class</strong>: Classe de produto.(<em>string</em>)</li>
+<li><strong>ModelName</strong>: Nome do modelo do
+produto.(<em>string</em>)</li>
+<li><strong>Description</strong>: Descrição do produto.
+(<em>string</em>)</li>
+<li><strong>Status</strong>: Disponibilidade para
+vender.(<em>string</em>)</li>
+<li><strong>SubCategory</strong>: Sub-categoria. (<em>string</em>)</li>
+<li><strong>Category</strong>: Categoria. (<em>string</em>)</li>
 <li><strong>StartDate</strong>: Desde quando o produto está disponível
-para vender.</li>
+para vender.(<em>date</em>)</li>
 <li><strong>EndDate</strong>: Desde quando o produto deixou de estar
-disponivel para venda.</li>
+disponivel para venda. (<em>date</em>)</li>
 </ul>
 </div>
 <div id="productcategory" class="section level2">
@@ -2147,13 +2157,13 @@ disponivel para venda.</li>
 <p>Informação sobre a categoria do produto.</p>
 <ul>
 <li><strong>ProductCategoryKey</strong>: Chave que identifica
-univocamente o produto.</li>
+univocamente o produto. (<em>factor</em>)</li>
 <li><strong>EnglishProductCategoryName</strong>: Nome da categoria do
-produto em Inglês.</li>
+produto em Inglês.(<em>string</em>)</li>
 <li><strong>SpanishProductCategoryName</strong>: Nome da categoria do
-produto em Espanhol.</li>
+produto em Espanhol.(<em>string</em>)</li>
 <li><strong>FrenchProductCategoryName</strong>: Nome da categoria do
-produto em Francês.</li>
+produto em Francês.(<em>string</em>)</li>
 </ul>
 </div>
 <div id="productsubcategory" class="section level2">
@@ -2161,51 +2171,58 @@ produto em Francês.</li>
 <p>Informação sobre a sub-categoria do produto.</p>
 <ul>
 <li><strong>ProductCategoryKey</strong>: Chave que identifica
-univocamente o produto.</li>
+univocamente o produto. (<em>factor</em>)</li>
 <li><strong>ProductSubCategoryKey</strong>: Chave que identifica a
-sub-categoria do produto (numeric).</li>
+sub-categoria do produto (<em>factor</em>).</li>
 <li><strong>EnglishProductSubCategoryName</strong>: Nome da
-sub-categoria do produto em Inglês.</li>
+sub-categoria do produto em Inglês.(<em>string</em>)</li>
 <li><strong>SpanishProductSubCategoryName</strong>: Nome da
-sub-categoria do produto em Espanhol.</li>
+sub-categoria do produto em Espanhol.(string_)</li>
 <li><strong>FrenchProductSubCategoryName</strong>: Nome da sub-categoria
-do produto em Francês.</li>
+do produto em Francês. (<em>string</em>)</li>
 </ul>
 </div>
 <div id="customers" class="section level2">
 <h2>5.<code>customers</code></h2>
 <p>Informação sobre os clientes.</p>
 <ul>
-<li><strong>CustomerKey</strong>: Chave que identifica o cliente.</li>
+<li><strong>CustomerKey</strong>: Chave que identifica o
+cliente.(<em>factor</em>)</li>
 <li><strong>GeographyKey</strong>: Chave que identifica a
-cidade/código-postal do cliente.</li>
-<li><strong>Name</strong>: Nome do cliente.</li>
-<li><strong>BirthDate</strong>: Data de nascimento do cliente.</li>
-<li><strong>MaritalStatus</strong>: Estado-civil do cliente.</li>
-<li><strong>Gender</strong>: Género do Cliente.</li>
-<li><strong>YearlyIncome</strong>: Nível de rendimento do cliente.</li>
+cidade/código-postal do cliente.(<em>factor</em>)</li>
+<li><strong>Name</strong>: Nome do cliente.(<em>string</em>)</li>
+<li><strong>BirthDate</strong>: Data de nascimento do
+cliente.(<em>date</em>)</li>
+<li><strong>MaritalStatus</strong>: Estado-civil do
+cliente.(<em>string</em>)</li>
+<li><strong>Gender</strong>: Género do Cliente. (<em>string</em>)</li>
+<li><strong>YearlyIncome</strong>: Nível de rendimento do
+cliente.(<em>numeric</em>)</li>
 <li><strong>NumberChildrenAtHome</strong>: Número de crianças do
-cliente.</li>
-<li><strong>Occupation</strong>: Profissão do cliente.</li>
+cliente.(<em>numeric</em>)</li>
+<li><strong>Occupation</strong>: Profissão do
+cliente.(<em>string</em>)</li>
 <li><strong>HouseOwnerFlag</strong>: Se o cliente é proprietário ou não
-de habitação. (factor?)</li>
+de habitação. (<em>numeric</em>)</li>
 <li><strong>NumberCarsOwned</strong>: Quantos carros cliente
-possui.</li>
-<li><strong>AddressLine</strong>: Morada do cliente.</li>
-<li><strong>Phone</strong>: Número de telefone do cliente.</li>
-<li><strong>DateFirstPurchase</strong>: Data da primeira compra.</li>
+possui.(<em>numeric</em>)</li>
+<li><strong>AddressLine</strong>: Morada do cliente.
+(<em>string</em>)</li>
+<li><strong>Phone</strong>: Número de telefone do cliente.
+(<em>numeric</em>)</li>
+<li><strong>DateFirstPurchase</strong>: Data da primeira compra.
+(<em>date</em>)</li>
 </ul>
 </div>
 <div id="territory" class="section level2">
 <h2>6.<code>territory</code></h2>
 <p>Informação geográfica.</p>
 <ul>
-<li><strong>TERRITORY DIMENSION</strong>: Dimensão do território.</li>
-<li><strong>Territory Key</strong>: Chave que identifica o
-território.</li>
-<li><strong>Region</strong>: Região.</li>
-<li><strong>Country</strong>: País.</li>
-<li><strong>Group</strong>: Região económica.</li>
+<li><strong>Territory Key</strong>: Chave que identifica o território.
+(<em>factor</em>)</li>
+<li><strong>Region</strong>: Região. (<em>string</em>)</li>
+<li><strong>Country</strong>: País. (<em>string</em>)</li>
+<li><strong>Group</strong>: Região económica. (<em>string</em>)</li>
 </ul>
 </div>
 <div id="factsales" class="section level2">
@@ -2213,25 +2230,29 @@ território.</li>
 <p>Tabela de factos [Vendas]</p>
 <ul>
 <li><strong>OrderDateKey</strong>: Chave que identifica a data da
-compra.</li>
+compra.(<em>factor</em>)</li>
 <li><strong>ProductKey</strong>: Chave que identifica o produto
-(numeric).</li>
-<li><strong>CustomerKey</strong>: Chave que identifica o cliente.</li>
+(<em>factor</em>).</li>
+<li><strong>CustomerKey</strong>: Chave que identifica o
+cliente.(<em>factor</em>)</li>
 <li><strong>SalesTerritoryKey</strong>: Chave que identifica o
-território onde se realizou a compra.</li>
+território onde se realizou a compra.(<em>factor</em>)</li>
 <li><strong>SalesOrderNumber</strong>: Número que identifica a
-venda.</li>
+venda.(<em>numeric</em>)</li>
 <li><strong>SalesOrderLineNumber</strong>: Número que identifica as
-transações numa venda.</li>
-<li><strong>OrderQuantity</strong>: Quantidade transacionada.</li>
-<li><strong>UnitPrice</strong>: Preço unitário.</li>
+transações numa venda. (<em>string</em>)</li>
+<li><strong>OrderQuantity</strong>: Quantidade transacionada.
+(<em>numeric</em>)</li>
+<li><strong>UnitPrice</strong>: Preço unitário. (<em>numeric</em>)</li>
 <li><strong>ProductStandardCost</strong>: O custo do produto para a
-empresa.</li>
-<li><strong>SalesAmount</strong>: Preço da transação.</li>
-<li><strong>TaxAmt</strong>: Imposto sobre a venda.</li>
-<li><strong>Freight</strong>: Custo de envio.</li>
+empresa. (<em>numeric</em>)</li>
+<li><strong>SalesAmount</strong>: Preço da
+transação.(<em>numeric</em>)</li>
+<li><strong>TaxAmt</strong>: Imposto sobre a venda.
+(<em>numeric</em>)</li>
+<li><strong>Freight</strong>: Custo de envio. (<em>numeric</em>)</li>
 <li><strong>RegionMonthID</strong>: Informação sobre quando (mês) foi
-realizada a venda e em que região.</li>
+realizada a venda e em que região. (<em>factor</em>)</li>
 </ul>
 </div>
 </div>
