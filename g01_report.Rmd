@@ -81,7 +81,7 @@ plot(as.factor(customers$MaritalStatus))
 
 -   **Conclusões**
 
-Os clientes tem rendimeto baixo.
+
 
 # Propostas para análise
 ## Departamento de Marketing
@@ -91,6 +91,48 @@ Os clientes tem rendimeto baixo.
 
 ### Produto
 #### O que é que se vende mais? De que categoria? De que subcategoria?
+
+Nesta análise propõe-se avaliar as vendas da empresa numa abordagem *"general to detailed"* , de forma a que se desenhe uma perspetiva geral do desempenho, seguido de um estudo mais aprofundando, envolvendo as subcategorias das categorias principais. A análise terá foco tanto em quantidades
+como em valores monetários.
+
+### Por Categoria X Quantidades
+```{r}
+load("sales_product.Rda")
+plot(as.factor(sales_product$Category))
+```
+
+### Por Valor
+
+```{r}
+# Total Accessories Sales
+accs_sales_amount <- 
+    as.numeric(round(sum(sales_product$SalesAmount[which(sales_product$Category == "Accessories")])))
+
+# Total Bike Sales
+bike_sales_amount <- 
+    as.numeric(round(sum(sales_product$SalesAmount[which(sales_product$Category == "Bikes")])))
+
+# Total Clothing Sales
+clothing_sales_amount <- 
+    as.numeric(round(sum(sales_product$SalesAmount[which(sales_product$Category == "Clothing")])))
+
+valores <- 
+    c("Accessories" = accs_sales_amount, 
+      "Bikes" = bike_sales_amount,
+      "Clothing" = clothing_sales_amount)
+
+```
+
+
+
+**Accessories**
+
+
+**Bikes** 
+
+**Clothing**
+
+
 #### Os novos produtos estão a vender mais ou menos que os anteriores?
 
 ### Região
