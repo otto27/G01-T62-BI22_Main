@@ -94,9 +94,23 @@ factSales$salesMonth <- ordered(factSales$salesMonth,
 ## SALES PRODUCT ANALYSIS 
 
 # Generate leaner dataframes
+
+# Products - for product analysis
 sales_product <- merge(factSales, products, by = "ProductKey")
 sales_product <- subset(sales_product, select = -c(SalesOrderLineNumber))
 save(sales_product, file = "sales_product.Rda")
+
+# Clients - for client analysis
+clients_purchases <- merge(factSales, customers, by = "CustomerKey")
+clients_purchases <- subset(clients_purchases, select = -c(SalesOrderNumber,
+                                                           SalesOrderLineNumber,
+                                                           OrderQuantity,
+                                                           UnitPrice,
+                                                           ProductStandardCost,
+                                                           TaxAmt,
+                                                           Freight))
+
+# Regions - for location analysis
 
 
 ##QUE CATEGORIA DE PRODUTO VENDE MAIS - quantity?
