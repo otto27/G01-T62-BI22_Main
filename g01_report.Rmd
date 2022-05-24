@@ -50,19 +50,9 @@ opts_knit$set(width=80)
 
 ## Introdução
 
-Inserir introdução...
 
 ## Marketing
 
-Mostra-se um exemplo de código incluído neste ficheiro que produz o relatório!
-
-```{r M1}
-if (file.exists("customers.Rda") == FALSE) {
-   cat("Dude, é preciso construir o dataframe customers!")
-} else {
-        load("customers.Rda")
-}
-```
 
 ### Perfil dos clientes
 
@@ -70,7 +60,6 @@ Apresentam-se algumas características dos clientes ...
 
 -   **Rendimento**
 
-Os clientes tem rendimeto baixo.
 
 -   **Género**
 
@@ -79,7 +68,7 @@ load("customers.Rda")
 plot(as.factor(customers$MaritalStatus))
 ```
 
--   **Conclusões**
+-   **Recomendações**
 
 
 
@@ -104,25 +93,13 @@ plot(as.factor(sales_product$Category))
 ### Por Valor
 
 ```{r}
-# Total Accessories Sales
-accs_sales_amount <- 
-    as.numeric(round(sum(sales_product$SalesAmount[which(sales_product$Category == "Accessories")])))
 
-# Total Bike Sales
-bike_sales_amount <- 
-    as.numeric(round(sum(sales_product$SalesAmount[which(sales_product$Category == "Bikes")])))
 
-# Total Clothing Sales
-clothing_sales_amount <- 
-    as.numeric(round(sum(sales_product$SalesAmount[which(sales_product$Category == "Clothing")])))
 
-valores <- 
-    c("Accessories" = accs_sales_amount, 
-      "Bikes" = bike_sales_amount,
-      "Clothing" = clothing_sales_amount)
+
+
 
 ```
-
 
 
 **Accessories**
