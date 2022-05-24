@@ -55,7 +55,7 @@ graf_bar <- ggplot(df_agg2, aes(x = factor(Country), y = SalesAmount/1000)) +
     labs(title = "Sales Amount by Country",
          subtitle = " Years: 2016 to 2019",
          x = "Country",
-         y = "Sales Amount (k dollars)")
+         y = "Sales Amount ")
 
 
 #beautiful tables
@@ -108,10 +108,10 @@ factSales$salesMonth <- ordered(factSales$salesMonth,
 
 
 
-## SALES PRODUCT ANALYSIS ----
+## SALES ANALYSIS ----
 
-# Generate leaner dataframes
 
+## LEANER DATAFRAMES
 # Products - for product analysis
 sales_product <- merge(factSales, products, by = "ProductKey")
 sales_product <- subset(sales_product, select = -c(SalesOrderLineNumber))
@@ -127,7 +127,7 @@ clients_purchases <- subset(clients_purchases, select = -c(SalesOrderNumber,
                                                            TaxAmt,
                                                            Freight))
 
-##QUE CATEGORIA DE PRODUTO VENDE MAIS - quantity
+## ************** QUE CATEGORIA DE PRODUTO VENDE MAIS - quantity **************
 
 ##By Product Category
 
@@ -160,21 +160,33 @@ models_sales_amount <- aggregate(SalesAmount ~ ProductName + salesYear,
 models_most_sales <- models_sales_amount |> arrange(desc(SalesAmount)) |> head(15)
 
 
-
+##  ************************ END PRODUTO QUE VENDE MAIS 
 #PLOTTING
 
 
 
 
+
+## ************************* ANALISE DE VENDAS POR QUARTER E ANO
+
+sales_quarters_years <- aggregate(SalesAmount ~ salesQuarter + salesYear, data = sales_av, FUN = sum, na.rm = TRUE)
+
+salesAmount_quarter_year <- ggplot(sales_quarters_years, aes(x = factor(salesQuarter), y = SalesAmount/10^6)) +
+    geom_col(fill = "lightblue") + 
+    facet_wrap(~ salesYear, nrow = 4) +
+    labs(title = "Sales Amount by Quarters",
+         subtitle = " Years: 2016 to 2019",
+         x = "Quarters",
+         y = "Sales Amount ")
+
+
 ##  REGIONS ANALYSIS ----
 #Aula 18 May
-## Aggregate
-df_agg1 <- aggregate(SalesAmount ~ Country, data = sales_av, FUN = sum, na.rm = TRUE)
-df_agg1 
+
 # - littlemissdata
 
-df_agg2 <- aggregate(SalesAmount ~ Country + Region + salesYear, data = sales_av, FUN = sum, na.rm = TRUE)
-df_agg2 
+sales_countries_region <- aggregate(SalesAmount ~ Country + Region + salesYear, data = sales_av, FUN = sum, na.rm = TRUE)
+ 
 
 
 
