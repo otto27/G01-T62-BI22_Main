@@ -72,9 +72,13 @@ formattable(df_agg1, align =c("c", "c"),
 
 
 ## *****************  DATA FRAME MANIPULATION ----
-##estrutura e dimensão da sheet customers ##
+## estrutura e dimensão da sheet customers ##
 str(customers)
 dim(customers)
+
+## TODO
+## Adicionar uma coluna de idade ao sales_av através da subtração das colunas
+## AsDate
 
 
 ###  Carregar todos os dataframes para RAM
@@ -92,40 +96,13 @@ for (i in file_nomes) {
 rm(i, file_nomes)
 
 
-#Feito na aula 11 maio
-#Determinação dos dados categorizados como Factor
-factSales$salesYear <- as.factor(year(factSales$OrderDate))
-factSales$salesQuarter <- as.factor(quarters(factSales$OrderDate))
-factSales$salesMonth <- as.factor(months(factSales$OrderDate, abbreviate = TRUE))
-factSales$salesDay <- as.factor(weekdays(factSales$OrderDate, abbreviate = TRUE))
-
-factSales$salesMonth <- ordered(factSales$salesMonth, 
-                                levels = c("january", "february", "march", 
-                                           "april", "may", "june", "july",
-                                           "august", "september", "october",
-                                           "november", "december"))
-
-
-
 
 ## SALES ANALYSIS ----
 
 
 ## LEANER DATAFRAMES
-# Products - for product analysis
-sales_product <- merge(factSales, products, by = "ProductKey")
-sales_product <- subset(sales_product, select = -c(SalesOrderLineNumber))
-save(sales_product, file = "sales_product.Rda")
 
-# Clients - for client analysis
-clients_purchases <- merge(factSales, customers, by = "CustomerKey")
-clients_purchases <- subset(clients_purchases, select = -c(SalesOrderNumber,
-                                                           SalesOrderLineNumber,
-                                                           OrderQuantity,
-                                                           UnitPrice,
-                                                           ProductStandardCost,
-                                                           TaxAmt,
-                                                           Freight))
+#acrescentar uma coluna ao SALES_AV com a idade dos clientes
 
 ## ************** QUE CATEGORIA DE PRODUTO VENDE MAIS - quantity **************
 
@@ -167,9 +144,11 @@ models_most_sales <- models_sales_amount |> arrange(desc(SalesAmount)) |> head(1
 
 
 
-## ************************* ANALISE DE VENDAS POR QUARTER E ANO
+## ************************* ANALISE DE VENDAS 
+### POR QUARTER E ANO
 
-sales_quarters_years <- aggregate(SalesAmount ~ salesQuarter + salesYear, data = sales_av, FUN = sum, na.rm = TRUE)
+sales_quarters_years <- aggregate(SalesAmount ~ salesQuarter + salesYear, 
+                                  data = sales_av, FUN = sum, na.rm = TRUE)
 
 salesAmount_quarter_year <- ggplot(sales_quarters_years, aes(x = factor(salesQuarter), y = SalesAmount/10^6)) +
     geom_col(fill = "lightblue") + 
@@ -177,7 +156,34 @@ salesAmount_quarter_year <- ggplot(sales_quarters_years, aes(x = factor(salesQua
     labs(title = "Sales Amount by Quarters",
          subtitle = " Years: 2016 to 2019",
          x = "Quarters",
-         y = "Sales Amount ")
+         y = "Sales Amount")
+
+### Por frequência de vendas de modo a saber períodos de tempo em que houve
+### mais ativididade
+sales_period <- aggregate(SalesAmount ~ salesMonth + salesYear + salesMonthday, 
+                      data = sales_av, FUN = mean, na.rm = TRUE)
+
+sales_period$salesMonth <- ordered(sales_period$salesMonth, levels = month_ord)
+
+month_ord <- c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
+               "Sep", "Oct", "Nov", "Dec")
+
+sales_period_bar <- ggplot(sales_period, aes(x = as.integer(salesMonthday), 
+                                  y = SalesAmount/1000)) + 
+                                        geom_line (color = "lightblue") +
+                                        geom_hline(yintercept = 1.5, 
+                                                  linetype = "dashed",
+                                                  color = "red",
+                                                  size = 0.2) +
+                                        geom_point(size = 0.3) + 
+                                        scale_x_continuous(breaks = c(1, 7, 15, 22, 31)) + 
+                                        facet_grid(salesMonth ~ salesYear) + 
+                                        labs(title = "Average Daily Sales", 
+                                             subtitle = "Years: 2016 to 2019", 
+                                             x = "Weekdays", 
+                                             y = "Sales Amount(thousand dollars)") +
+                                        theme_light()
+
 
 
 ##  REGIONS ANALYSIS ----
@@ -191,6 +197,22 @@ sales_countries_region <- aggregate(SalesAmount ~ Country + Region + salesYear, 
 
 
 ##  CLIENTS ANALYSIS ----
+
+## Média de gastos dos clientes/mês
+
+
+## Média de idades de clientes / territorio
+clients_df <- aggregate(SalesAmount ~ CustomerKey + Region, data = sales_av,
+                        FUN = sum, na.rm = TRUE) 
+
+
+# ordered
+clients_df <- clients_df[order(clients_df$SalesAmount, decreasing = TRUE),] 
+
+# top 20 clients
+clients_df_top20 <- head(clients_df, 50)
+
+
 
 
 #
