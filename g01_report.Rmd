@@ -50,13 +50,32 @@ opts_knit$set(width=80)
 
 ## Introdução
 
+	Vivemos em um mundo exponencialmente mais digital e com a digitalização das empresas e da sua informação, a necessidade de análise e tratamento desses mesmos dados é crescente e de imensurável importância na medida em que estes dados podem providenciar imenso valor e vantagens competitivas. 
+
+	No âmbito da disciplina de Business Intelligence, foi elaborado este trabalho onde o grupo se propõe a estudar um data mart de uma empresa fictícia com dados sobre os seus produtos, vendas, clientes e lojas como forma de extrair a informação relevante para cada um dos  diversos departamentos desta empresa, nomeadamente, os departamentos financeiro, de marketing e de gestão da empresa, agregando valor aos dados utilizados através da análise de dados com  utilização da linguagem ... (to be continued)
+
 
 ## Marketing
 
 
 ### Perfil dos clientes
 
-Apresentam-se algumas características dos clientes ...
+Apresentam-se algumas características dos clientes 
+```{r}
+load("sales_av.Rda")
+## TODO FALTA TERMINAR
+## Média de idades de clientes / territorio
+clients_df <- aggregate(SalesAmount ~ CustomerKey + Region, data = sales_av,
+                        FUN = sum, na.rm = TRUE) 
+
+
+# ordered
+clients_df <- clients_df[order(clients_df$SalesAmount, decreasing = TRUE),] 
+
+# top 20 clients
+clients_df_top20 <- head(clients_df, 50)
+```
+
 
 -   **Rendimento**
 
@@ -90,24 +109,43 @@ load("sales_product.Rda")
 plot(as.factor(sales_product$Category))
 ```
 
-### Por Valor
+### Por Faturação
 
 ```{r}
+load("sales_av.Rda")
+accs_sales_amount <- aggregate(SalesAmount ~ Category + salesYear, data = sales_av, 
+                                FUN = sum, na.rm = TRUE)
+
+sales_amt_bar <- 
+    ggplot(accs_sales_amount, aes(fill = Category, x = salesYear, y = SalesAmount/10^6)) +
+    geom_bar(position = "fill", stat = "identity") +
+    labs(title = "Sales Amount by Categories",
+         subtitle = " Years: 2016 to 2019",
+         x = "Categories",
+         y = "Percentages of Sales") +
+    scale_y_continuous(labels = scales::percent) 
+
+sales_amt_bar
+```
+
+As categorias mais vendidas ao longo do período de 2016 - 2019, consistem na categoria bicicletas. Em 2018, começou-se a vender outras categorias de produtos, nomeadamente, roupas e acessórios. Ambas as categorias, apesar de ainda serem pouco transacionáveis, cresceram.
 
 
 
 
+
+### Por Subcategorias mais vendidas
+
+
+```{r}
+##subs_sales_amount <- aggregate(SalesAmount ~ SubCategory + salesYear,
+##                             data = sales_av, FUN = sum, na.rm = TRUE)
+
+##subs_most_sales <- subs_sales_amount |> arrange(desc(SalesAmount)) |> head(5)
 
 
 ```
 
-
-**Accessories**
-
-
-**Bikes** 
-
-**Clothing**
 
 
 #### Os novos produtos estão a vender mais ou menos que os anteriores?
@@ -117,8 +155,64 @@ plot(as.factor(sales_product$Category))
 #### Em que alturas é que se vende mais? Existe sazonalidade?
 
 ## Departamento de Vendas
-### Produto
-#### -Quais os canais de vendas com mais escoabilidade de produtos?
+### Análise de vendas por quarter e por ano
+```{r}
+sales_quarters_years <- aggregate(SalesAmount ~ salesQuarter + salesYear, 
+                                  data = sales_av, FUN = sum, na.rm = TRUE)
+
+salesAmount_quarter_year <- ggplot(sales_quarters_years, aes(x = factor(salesQuarter), y = SalesAmount/10^6)) +
+    geom_col(fill = "lightblue") + 
+    facet_wrap(~ salesYear, nrow = 4) +
+    labs(title = "Sales Amount by Quarters",
+         subtitle = " Years: 2016 to 2019",
+         x = "Quarters",
+         y = "Sales Amount")
+
+salesAmount_quarter_year
+
+```
+
+Não existem dados de transações relativos aos 2 primeiros quarters de 2016 e os dois últimos de 2019.
+Existem flutuações entre quarters, sendo a tendência do volume de vendas de crescimento. É notável que o período entre o Q3- 2016 e o Q2- 2017, foi marcado por um crescimento, enquanto que no mesmo período dos anos seguintes (Q3- 2017 a Q2-2018), sofreu um decréscimo do volume de vendas. Esta tendência inverteu-se no período seguinte, sendo registado um crescimento.
+Acreditamos que, poderá existir um padrão de sazonalidade, que caso se repita, se refletirá num decréscimo do volume de vendas no próximo ano. Deverá existir um controlo mais rigoroso do volume de vendas para que este padrão possa ser identificado antecipadamente.
+
+
+### Por frequência de vendas de modo a saber períodos de tempo em que houve
+mais ativididade
+
+```{r}
+sales_period <- aggregate(SalesAmount ~ salesMonth + salesYear + salesMonthday, 
+                      data = sales_av, FUN = mean, na.rm = TRUE)
+
+month_ord <- c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
+               "Sep", "Oct", "Nov", "Dec")
+
+sales_period$salesMonth <- ordered(sales_period$salesMonth, levels = month_ord)
+
+
+
+sales_period_bar <- ggplot(sales_period, aes(x = as.integer(salesMonthday), 
+                                  y = SalesAmount/1000)) + 
+                                        geom_line (color = "lightblue") +
+                                        geom_hline(yintercept = 1.5, 
+                                                  linetype = "dashed",
+                                                  color = "red",
+                                                  size = 0.2) +
+                                        geom_point(size = 0.3) + 
+                                        scale_x_continuous(breaks = c(1, 7, 15, 22, 31)) + 
+                                        facet_grid(salesMonth ~ salesYear) + 
+                                        labs(title = "Average Daily Sales", 
+                                             subtitle = "Years: 2016 to 2019", 
+                                             x = "Weekdays", 
+                                             y = "Sales Amount(thousand dollars)") +
+                                        theme_light()
+
+sales_period_bar
+```
+O presente gráfico permite perceber as venda diárias em quatro dimensões temporais: vendas diárias, semanais, mensais e anuais.
+A linha vermelha representa o mínimo que a empresa necessita de vender por mês para se tornar rentável (1.500 doláres). 
+
+
 
 
 ## Departamento Financeiro

@@ -122,13 +122,18 @@ sales_amt_bar <-
     scale_y_continuous(labels = scales::percent) 
 
 ## By product Subcategory
-
+## TODO FALTA GERAR O GRÁFICO
 subs_sales_amount <- aggregate(SalesAmount ~ SubCategory + salesYear,
                              data = sales_av, FUN = sum, na.rm = TRUE)
 
 subs_most_sales <- subs_sales_amount |> arrange(desc(SalesAmount)) |> head(5)
 
+subs_most_sales_bar <- ggplot(subs_most_sales, aes(x=salesYear, 
+                                                   y=SalesAmount, size = pop)) +
+                                geom_point(alpha=0.7)
 
+
+## TODO FALTA GERAR O GRÁFICO
 #Modelos por faturação
 models_sales_amount <- aggregate(SalesAmount ~ ProductName + salesYear, 
                                 data = sales_av, FUN = sum, na.rm = TRUE)
@@ -189,7 +194,6 @@ sales_period_bar <- ggplot(sales_period, aes(x = as.integer(salesMonthday),
 ##  REGIONS ANALYSIS ----
 #Aula 18 May
 
-# - littlemissdata
 
 sales_countries_region <- aggregate(SalesAmount ~ Country + Region + salesYear, data = sales_av, FUN = sum, na.rm = TRUE)
  
@@ -199,24 +203,50 @@ sales_countries_region <- aggregate(SalesAmount ~ Country + Region + salesYear, 
 ##  CLIENTS ANALYSIS ----
 
 ## Média de gastos dos clientes/mês
-
-
 ## Média de idades de clientes / territorio
 clients_df <- aggregate(SalesAmount ~ CustomerKey + Region, data = sales_av,
                         FUN = sum, na.rm = TRUE) 
 
-
+#Where our best 100 clients are located, by quantity and avg money spent
 # ordered
 clients_df <- clients_df[order(clients_df$SalesAmount, decreasing = TRUE),] 
 
-# top 20 clients
-clients_df_top20 <- head(clients_df, 50)
+# top 100 clients
+clients_df_top100 <- head(clients_df, 100)
+
+## Vector with unique region values
+vec_regions <- sort(unique(clients_df_top100$Region))
+avg_values <- list(country = vec_regions,
+                   avg_spending = c(),
+                   quantity = c())
+
+for (region in avg_values$country) {
+    countries <- subset(clients_df_top100, Region == region)
+    counter <- as.integer(length(countries$CustomerKey))
+    percentage_of_clients <- (counter / length(clients_df_top100$CustomerKey)) * 100
+    avg_spending <- round(mean(countries$SalesAmount))
+    #append to list
+    avg_values$avg_spending <- c(avg_values$avg_spending, avg_spending)
+    avg_values$quantity <- c(avg_values$quantity, percentage_of_clients)
+}
+
+#Convert to dataframe
+best_clients_df <- as.data.frame(avg_values)
+best_clients_df$country <- as.factor(best_clients_df$country)
+
+#Create Graph
+best_clients_bar_colors <- c("#FEF9A7", "#37E2D5", "#C70A80", "#9BA3EB")
+sizeRange <- c(2,12)
+best_clients_bar <- ggplot(best_clients_df, aes(x = avg_spending, y = quantity,
+                                                size = quantity)) + 
+                    geom_point(alpha = 0.7) +
+                    scale_size(range = sizeRange, name="Países") +
+                    labs(title = "Top Customers By Region", 
+                        x = "Gasto médio de Cliente", 
+                        y = "Concentração(em %)") 
 
 
-
-
-#
-
+# Distribuição de idades dos clientes
 
 
 
