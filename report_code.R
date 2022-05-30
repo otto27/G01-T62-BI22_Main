@@ -11,18 +11,7 @@
 ## Instalação de bibliotecas ##
 ## executar em todas as sessões ##
 
-bibliotecas <- c("knitr", "rmdformats", "readxl", "lubridate", "ggplot2", "DT",
-                 "dplyr", "formattable", "plotly")
-for (bibl in bibliotecas) {
-    if (bibl %in% rownames(installed.packages()) == FALSE){
-        install.packages(bibl, dependencies = TRUE)
-        library(bibl, character.only = TRUE)    
-    }
-    else {
-        library(bibl, character.only = TRUE)
-    }
-}
-rm(bibl, bibliotecas)
+
 
 
 ## Leitura dos dados e construção de data frames
@@ -35,9 +24,6 @@ for(n in nomes_folhas) {
     save(list = n, file = paste0(n, ".Rda"))
 }
 remove(n, nomes_folhas)
-
-
-
 
 
 ## *************        UTILS  ----
@@ -75,10 +61,6 @@ formattable(df_agg1, align =c("c", "c"),
 ## estrutura e dimensão da sheet customers ##
 str(customers)
 dim(customers)
-
-## TODO
-## Adicionar uma coluna de idade ao sales_av através da subtração das colunas
-## AsDate
 
 
 ###  Carregar todos os dataframes para RAM
@@ -198,13 +180,11 @@ sales_period_bar <- ggplot(sales_period, aes(x = as.integer(salesMonthday),
 sales_countries_region <- aggregate(SalesAmount ~ Country + Region + salesYear, data = sales_av, FUN = sum, na.rm = TRUE)
  
 
-
-
 ##  CLIENTS ANALYSIS ----
 
 ## Média de gastos dos clientes/mês
 ## Média de idades de clientes / territorio
-clients_df <- aggregate(SalesAmount ~ CustomerKey + Region, data = sales_av,
+clients_df <- aggregate(SalesAmount ~ CustomerKey + Region + YearlyIncome, data = sales_av,
                         FUN = sum, na.rm = TRUE) 
 
 #Where our best 100 clients are located, by quantity and avg money spent
@@ -213,6 +193,10 @@ clients_df <- clients_df[order(clients_df$SalesAmount, decreasing = TRUE),]
 
 # top 100 clients
 clients_df_top100 <- head(clients_df, 100)
+
+#Distribuição de Rendimentos dos nossos top 100 clientes
+hist(clients_df_top100$YearlyIncome, xlab = "Rendimento top100 clientes", 
+     main = "Histograma de Rendimentos Top 100 Clientes")
 
 ## Vector with unique region values
 vec_regions <- sort(unique(clients_df_top100$Region))
@@ -229,10 +213,12 @@ for (region in avg_values$country) {
     avg_values$avg_spending <- c(avg_values$avg_spending, avg_spending)
     avg_values$quantity <- c(avg_values$quantity, percentage_of_clients)
 }
+remove(countries, counter, percentage_of_clients, avg_spending)
 
 #Convert to dataframe
 best_clients_df <- as.data.frame(avg_values)
 best_clients_df$country <- as.factor(best_clients_df$country)
+
 
 #Create Graph
 best_clients_bar_colors <- c("#FEF9A7", "#37E2D5", "#C70A80", "#9BA3EB")
@@ -247,16 +233,16 @@ best_clients_bar <- ggplot(best_clients_df, aes(x = avg_spending, y = quantity,
 
 
 # Distribuição de idades dos clientes
+##Adicionar coluna nova de idade ao DF sales_av
+Age <- as.integer(format(Sys.Date(), "%Y")) - (as.integer(format(sales_av$BirthDate, format = "%Y")))
+sales_av <- add_column(sales_av, Age, .after = which(colnames(sales_av) == "BirthDate"))
 
+##Build histogram
+hist(sales_av$Age, xlab = "Idades", main = "Histograma de Idades")
 
-
-
-
-
-
-
-
-
+#Distribuição do rendimentos
+hist(sales_av$YearlyIncome, xlab = "Distribuição Rendimentos (em milhares)",
+     breaks = 10, main = "Histograma de Rendimentos")
 
 
 

@@ -50,9 +50,9 @@ opts_knit$set(width=80)
 
 ## Introdução
 
-	Vivemos em um mundo exponencialmente mais digital e com a digitalização das empresas e da sua informação, a necessidade de análise e tratamento desses mesmos dados é crescente e de imensurável importância na medida em que estes dados podem providenciar imenso valor e vantagens competitivas. 
+Vivemos em um mundo exponencialmente mais digital e com a digitalização das empresas e da sua informação, a necessidade de análise e tratamento desses mesmos dados é crescente e de imensurável importância na medida em que estes dados podem providenciar imenso valor e vantagens competitivas. 
 
-	No âmbito da disciplina de Business Intelligence, foi elaborado este trabalho onde o grupo se propõe a estudar um data mart de uma empresa fictícia com dados sobre os seus produtos, vendas, clientes e lojas como forma de extrair a informação relevante para cada um dos  diversos departamentos desta empresa, nomeadamente, os departamentos financeiro, de marketing e de gestão da empresa, agregando valor aos dados utilizados através da análise de dados com  utilização da linguagem ... (to be continued)
+No âmbito da disciplina de Business Intelligence, foi elaborado este trabalho onde o grupo se propõe a estudar um data mart de uma empresa fictícia com dados sobre os seus produtos, vendas, clientes e lojas como forma de extrair a informação relevante para cada um dos  diversos departamentos desta empresa, nomeadamente, os departamentos financeiro, de marketing e de gestão da empresa, agregando valor aos dados utilizados através da sua análise com  utilização da linguagem R e produzindo um relatório descritivo para cada departamento de estudo. 
 
 
 ## Marketing
@@ -81,16 +81,38 @@ clients_df_top20 <- head(clients_df, 50)
 
 
 -   **Género**
-
 ```{r G1, eval = TRUE, echo = TRUE}
 load("customers.Rda")
-plot(as.factor(customers$MaritalStatus))
+plot(as.factor(customers$Gender),
+     main = " Customers Gender",
+     ylab = " Quantity",
+     xlab = "Gender",
+     xlim = c(0, 10000),
+     col= "lightblue",
+     horiz = TRUE,
+     las = 1)
 ```
+
+Uma análise, quanto ao género, do perfil dos consumidores. Podemos constatar que existe uma pequena maioria de consumidores do género masculino, no entanto, apenas por uma margém ténue.
+
+-   **Estado Civil**
+
+```{r G2, eval = TRUE, echo = TRUE}
+load("customers.Rda")
+plot(as.factor(customers$MaritalStatus),
+     main = "Customers Gender",
+     ylab = "Gender",
+     xlab = "Quantity",
+     col= "lightblue",
+     horiz = TRUE, 
+     las = 1)
+```
+Uma análise, quanto ao estado civil, do perfil dos consumidores, pode constatar-se que existe uma maioria de consumidores casados, face aos solteiros. 
 
 -   **Recomendações**
 
 
-
+§
 # Propostas para análise
 ## Departamento de Marketing
 ### Clientes
@@ -104,14 +126,20 @@ Nesta análise propõe-se avaliar as vendas da empresa numa abordagem *"general 
 como em valores monetários.
 
 ### Por Categoria X Quantidades
-```{r}
+```{r G3, eval = TRUE, echo = TRUE}
 load("sales_product.Rda")
-plot(as.factor(sales_product$Category))
+plot(as.factor(sales_product$Category),
+     main = "Category Sales Quantity",
+     ylab = "Sales Quantity",
+     xlab = "Category",
+     ylim = c(0, 40000),
+     col = "lightblue")
 ```
 
+Uma análise das categorias, quanto à quantidade de unidades vendidas. Pode ver-se que a categoria que mais vendeu foi a categoria dos acessórios, não obstante a sua venda apenas começar no ano de 2018, seguidamente a categoria das bicicletas e por fim a categoria de vestuário.
 ### Por Faturação
 
-```{r}
+```{r G4, eval = TRUE, echo = TRUE}
 load("sales_av.Rda")
 accs_sales_amount <- aggregate(SalesAmount ~ Category + salesYear, data = sales_av, 
                                 FUN = sum, na.rm = TRUE)
@@ -177,8 +205,7 @@ Existem flutuações entre quarters, sendo a tendência do volume de vendas de c
 Acreditamos que, poderá existir um padrão de sazonalidade, que caso se repita, se refletirá num decréscimo do volume de vendas no próximo ano. Deverá existir um controlo mais rigoroso do volume de vendas para que este padrão possa ser identificado antecipadamente.
 
 
-### Por frequência de vendas de modo a saber períodos de tempo em que houve
-mais ativididade
+### Por frequência de vendas de modo a saber períodos de tempo em que houve mais ativididade
 
 ```{r}
 sales_period <- aggregate(SalesAmount ~ salesMonth + salesYear + salesMonthday, 
