@@ -245,6 +245,14 @@ hist(sales_av$YearlyIncome, xlab = "Distribuição Rendimentos (em milhares)",
      breaks = 10, main = "Histograma de Rendimentos")
 
 
+#De todos os clientes que tenho, quero saber que percentagem tem carro e ñ tem
+car_clients_df <- aggregate(SalesAmount ~ NumberCarsOwned,
+                            data = sales_av, FUN = sum, na.rm = T)
+
+
+ 
+
+
 
 
 
