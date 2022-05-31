@@ -1,0 +1,87 @@
+---
+title: "Dashboard"
+author: "G00/T00"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: scroll
+    social: menu
+    source: embed
+    theme: sandstone
+---
+
+```{r code, include=FALSE}
+bibliotecas <- c("readxl", "lubridate", "ggplot2", "DT", "knitr", "flexdashboard")
+for (bibl in bibliotecas) {
+    if (bibl %in% rownames(installed.packages()) == FALSE){
+        install.packages(bibl, dependencies = TRUE)
+        library(bibl, character.only = TRUE)    
+    }
+     else {
+        library(bibl, character.only = TRUE)
+     }
+}
+rm(bibl, bibliotecas)
+
+load("sales_av.Rda")
+```
+
+# Introdução {.sidebar}
+Este _dashboard_ é apenas um exemplo e serve de _template_ para o trabalho.
+Consulte, por exemplo, o [**webinar**](https://www.rstudio.com/resources/webinars/introducing-flexdashboards/) para obter mais informação sobre outras configurações.
+
+
+# Transacções
+
+## Row {data-heigth=850}
+
+
+### Transacções médias diárias
+```{r grafTransac}
+df_agg3 <- aggregate(cbind(SalesAmount, ProductStandardCost) ~ salesYear + salesMonth + salesMonthday,
+                     data = sales_av, 
+                     FUN = sum, 
+                     na.rm = TRUE)
+
+df_agg3$Margin <- round(((df_agg3$SalesAmount - df_agg3$ProductStandardCost) / 
+                    df_agg3$SalesAmount) * 100, 2)
+
+month_ord <- c("Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+               "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+df_agg3$salesMonth <- ordered(df_agg3$salesMonth, levels  = month_ord)
+
+
+graf_bar <- ggplot(df_agg3, aes(x = as.integer(salesMonthday), 
+                                y = Margin)) +
+            geom_line() + 
+            geom_point(size=0.4) +
+            geom_hline(yintercept=45, linetype="dashed", 
+               color = "red", size=.2) +
+            scale_x_continuous(breaks = c(1, 7, 15, 22, 31)) +
+            facet_grid(salesMonth ~ salesYear) +
+            labs(title = "Vendas médias diárias",
+                 subtitle = "Anos: 2016 to 2019",
+                  x = "Dias",
+                  y = "Receita (milhares de dólares)") +
+            theme_minimal()
+graf_bar
+```
+
+
+
+# Outra página
+
+## Column {data-width=650}
+
+### Outro Gráfico
+```{r}
+
+```
+
+
+## Column {data-width=350}
+
+### Ainda Outro Gráfico
+```{r}
+
+```
