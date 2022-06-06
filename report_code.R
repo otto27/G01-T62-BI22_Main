@@ -102,9 +102,8 @@ sales_amt_bar <-
          x = "Categories",
          y = "Percentages of Sales") +
     scale_y_continuous(labels = scales::percent) 
-
+sales_amt_bar
 ## By product Subcategory
-## TODO FALTA GERAR O GRÁFICO
 subs_sales_amount <- aggregate(SalesAmount ~ SubCategory + salesYear,
                              data = sales_av, FUN = sum, na.rm = TRUE)
 
@@ -115,13 +114,20 @@ subs_most_sales_bar <- ggplot(subs_most_sales, aes(x=salesYear,
                                 geom_point(alpha=0.7)
 
 
-## TODO FALTA GERAR O GRÁFICO
-#Modelos por faturação
+#Modelos por faturação - por redundância, este DF é apenas informativo
 models_sales_amount <- aggregate(SalesAmount ~ ProductName + salesYear, 
                                 data = sales_av, FUN = sum, na.rm = TRUE)
 
 #Names of models with most sales
 models_most_sales <- models_sales_amount |> arrange(desc(SalesAmount)) |> head(15)
+
+#Cores de produtos com mais procura para efeitos de stock
+
+color_prod_df <- aggregate(SalesAmount ~ Color, data = sales_av, FUN = sum, na.rm = T)
+table_color <- formattable(color_prod_df, align =c("c", "c"), 
+                      list('SalesAmount' = color_bar("lightblue")))
+
+table_color
 
 
 ##  ************************ END PRODUTO QUE VENDE MAIS 
@@ -138,12 +144,14 @@ sales_quarters_years <- aggregate(SalesAmount ~ salesQuarter + salesYear,
                                   data = sales_av, FUN = sum, na.rm = TRUE)
 
 salesAmount_quarter_year <- ggplot(sales_quarters_years, aes(x = factor(salesQuarter), y = SalesAmount/10^6)) +
-    geom_col(fill = "lightblue") + 
+    geom_bar(position=position_dodge(width = .2), stat="identity", size=.3,    colour="lightblue") +
     facet_wrap(~ salesYear, nrow = 4) +
     labs(title = "Sales Amount by Quarters",
          subtitle = " Years: 2016 to 2019",
          x = "Quarters",
          y = "Sales Amount")
+
+salesAmount_quarter_year
 
 ### Por frequência de vendas de modo a saber períodos de tempo em que houve
 ### mais ativididade
@@ -171,14 +179,21 @@ sales_period_bar <- ggplot(sales_period, aes(x = as.integer(salesMonthday),
                                              y = "Sales Amount(thousand dollars)") +
                                         theme_light()
 
+sales_period_bar
+
+
 
 
 ##  REGIONS ANALYSIS ----
-#Aula 18 May
 
+#Evolução de Vendas nos países
+sales_countries_region <- aggregate(SalesAmount ~ Country + salesYear, data = sales_av, FUN = sum, na.rm = TRUE)
 
-sales_countries_region <- aggregate(SalesAmount ~ Country + Region + salesYear, data = sales_av, FUN = sum, na.rm = TRUE)
+regions_sales <- ggplot(sales_countries_region, aes(fill=Country, y=SalesAmount/1000, x=salesYear)) + 
+    geom_bar(position="dodge", stat="identity")
  
+regions_sales
+
 
 ##  CLIENTS ANALYSIS ----
 
@@ -194,7 +209,7 @@ clients_df <- clients_df[order(clients_df$SalesAmount, decreasing = TRUE),]
 # top 100 clients
 clients_df_top100 <- head(clients_df, 100)
 
-#Distribuição de Rendimentos dos nossos top 100 clientes
+#***************Distribuição de Rendimentos dos nossos top 100 clientes
 hist(clients_df_top100$YearlyIncome, xlab = "Rendimento top100 clientes", 
      main = "Histograma de Rendimentos Top 100 Clientes")
 
@@ -224,12 +239,14 @@ best_clients_df$country <- as.factor(best_clients_df$country)
 best_clients_bar_colors <- c("#FEF9A7", "#37E2D5", "#C70A80", "#9BA3EB")
 sizeRange <- c(2,12)
 best_clients_bar <- ggplot(best_clients_df, aes(x = avg_spending, y = quantity,
-                                                size = quantity)) + 
+                                                size = quantity, color=country)) + 
                     geom_point(alpha = 0.7) +
-                    scale_size(range = sizeRange, name="Países") +
+                    scale_size(range = sizeRange) +
                     labs(title = "Top Customers By Region", 
                         x = "Gasto médio de Cliente", 
-                        y = "Concentração(em %)") 
+                        y = "Concentração(em %)",
+                        color = "Países") 
+ggplotly(best_clients_bar)
 
 
 # Distribuição de idades dos clientes
@@ -245,11 +262,15 @@ hist(sales_av$YearlyIncome, xlab = "Distribuição Rendimentos (em milhares)",
      breaks = 10, main = "Histograma de Rendimentos")
 
 
-#De todos os clientes que tenho, quero saber que percentagem tem carro e ñ tem
-car_clients_df <- aggregate(SalesAmount ~ NumberCarsOwned,
+#PERFIL DE CLIENTES COM CARRO
+car_clients_df <- aggregate(SalesAmount ~ NumberCarsOwned, 
                             data = sales_av, FUN = sum, na.rm = T)
+car_clients_df <- car_clients_df[order(car_clients_df$SalesAmount, decreasing = T),]
 
-
+#Perfil clientes com criancas
+children_clients_df <- aggregate(SalesAmount ~ NumberChildrenAtHome, 
+                            data = sales_av, FUN = sum, na.rm = T)
+children_clients_df <- children_clients_df[order(children_clients_df$SalesAmount, decreasing = T),]
  
 
 

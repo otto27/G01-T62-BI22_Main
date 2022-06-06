@@ -15,7 +15,7 @@ output:
 
 ```{r config, include=FALSE}
 # bibliotecas --- modificar sempre que acrescentar uma biblioteca
-bibliotecas <- c("knitr", "rmdformats", "readxl", "lubridate", "ggplot2", "DT")
+bibliotecas <- c("knitr", "rmdformats", "readxl", "lubridate", "ggplot2", "DT", "plotly", "dplyr", "tibble", "formattable", "gridExtra")
 for (bibl in bibliotecas) {
     if (bibl %in% rownames(installed.packages()) == FALSE){
         install.packages(bibl, dependencies = TRUE)
@@ -50,22 +50,21 @@ opts_knit$set(width=80)
 
 ## Introdução
 
-Vivemos em um mundo exponencialmente mais digital e com a digitalização das empresas e da sua informação, a necessidade de análise e tratamento desses mesmos dados é crescente e de imensurável importância na medida em que estes dados podem providenciar imenso valor e vantagens competitivas. 
+Vivemos em um mundo exponencialmente mais digital, sendo que, com esta digitalização das empresas e consequente geração de dados, a necessidade de análise e tratamento desses dados surge como uma das principais prioridades de investimento da gestão dos sistemas de informação atcrescente, na medida em que estes dados, quando transformados em informação e conhecimento, tendem a providenciar valor ao negócio e capacidade de diferenciação face a concorrência.
 
-No âmbito da disciplina de Business Intelligence, foi elaborado este trabalho onde o grupo se propõe a estudar um data mart de uma empresa fictícia com dados sobre os seus produtos, vendas, clientes e lojas como forma de extrair a informação relevante para cada um dos  diversos departamentos desta empresa, nomeadamente, os departamentos financeiro, de marketing e de gestão da empresa, agregando valor aos dados utilizados através da sua análise com  utilização da linguagem R e produzindo um relatório descritivo para cada departamento de estudo. 
-
+Tendo em consideração que só se melhora aquilo que se consegue medir, no âmbito da unidade curricular de Business Intelligence, foi elaborado este trabalho onde o grupo se propõe a realizar um estudo de um Data Mart de uma empresa fictícia com dados sobre os seus produtos, vendas, clientes e lojas de modo a extrair informação que seja relevante, sob forma de KPI's para cada um dos diversos departamentos desta empresa, nomeadamente, os departamentos financeiro, de marketing e de gestão da empresa, procurando determinar o estado atual do negócio e identificar secções onde esta análise, recorrendo a utilização da linguagem R e aos conhecimentos de negócio adquiridos ao longo do percurso, possa ser acionável, gerando valor para a gestão e para o negócio.
 
 ## Marketing
 
-
 ### Perfil dos clientes
 
-Apresentam-se algumas características dos clientes 
+Nesta seção propõem-se avaliar o perfil dos clientes da empresa, de forma a desenhar um pradrão numa perspetiva geral do leque que a empresa contém, seguido de um estudo relacionado sobre estas variáveis. A análise terá quatro parametros: género, estado civil, idade e rendimentos.
+
 ```{r}
 load("sales_av.Rda")
 ## TODO FALTA TERMINAR
 ## Média de idades de clientes / territorio
-clients_df <- aggregate(SalesAmount ~ CustomerKey + Region, data = sales_av,
+clients_df <- aggregate(SalesAmount ~ CustomerKey + Region + YearlyIncome, data = sales_av,
                         FUN = sum, na.rm = TRUE) 
 
 
@@ -74,59 +73,139 @@ clients_df <- clients_df[order(clients_df$SalesAmount, decreasing = TRUE),]
 
 # top 20 clients
 clients_df_top20 <- head(clients_df, 50)
+
+# top 100 clients
+clients_df_top100 <- head(clients_df, 100)
 ```
-
-
--   **Rendimento**
-
 
 -   **Género**
+
 ```{r G1, eval = TRUE, echo = TRUE}
 load("customers.Rda")
-plot(as.factor(customers$Gender),
-     main = " Customers Gender",
-     ylab = " Quantity",
-     xlab = "Gender",
-     xlim = c(0, 10000),
-     col= "lightblue",
-     horiz = TRUE,
-     las = 1)
+
+gender_df <- as.data.frame(table(sales_av$Gender))
+
+gender_bar <- ggplot(gender_df, aes(x=Var1, y=Freq)) + 
+                    geom_bar(stat = "identity", fill = "lightblue") +
+                    coord_flip() +
+                    labs(title = "Distribuição por género", 
+                        x = "Sexo", 
+                        y = "Quantidade") 
+
+gender_bar
 ```
 
-Uma análise, quanto ao género, do perfil dos consumidores. Podemos constatar que existe uma pequena maioria de consumidores do género masculino, no entanto, apenas por uma margém ténue.
+Uma análise, quanto ao género, do perfil dos consumidores permite observar que existe uma pequena maioria de consumidores do género masculino, sendo que, de forma geral, a distribuição é equilibrada.
 
 -   **Estado Civil**
 
 ```{r G2, eval = TRUE, echo = TRUE}
 load("customers.Rda")
 plot(as.factor(customers$MaritalStatus),
-     main = "Customers Gender",
-     ylab = "Gender",
-     xlab = "Quantity",
+     main = "Client Marital Status",
+     ylab = "Marital Status",
+     xlab = "Number of Clients",
      col= "lightblue",
      horiz = TRUE, 
      las = 1)
 ```
-Uma análise, quanto ao estado civil, do perfil dos consumidores, pode constatar-se que existe uma maioria de consumidores casados, face aos solteiros. 
+
+Uma análise, quanto ao estado civil, do perfil dos clientes, permite constatar que a maior parte são casados.
+
+-   **Género em relação Estado Civil**
+
+```{r T1, eval = TRUE, echo = TRUE}
+gen_marital_sales <- aggregate(SalesAmount ~ MaritalStatus + Gender, data = sales_av, FUN = sum, na.rm = NA)
+
+table1 <- formattable(gen_marital_sales, align =c("c", "c"), 
+                      list('SalesAmount' = color_bar("lightblue")))
+table1
+```
+
+Analisando ambos o género e o estado civil do cliente em simultâneo, conseguimos observar que embora exista uma pequena liderança em termos de clientes do género masculino, os clientes do género feminino gastaram mais dinheiro. Podemos ainda observar que o grupo que gastou mais dinheiro no total foram os clintes casados do género masculino, seguidos do género feminino solteiro.
+
+- **Distribuição por Idades**
+```{r}
+# Distribuição de idades dos clientes
+##Adicionar coluna nova de idade ao DF sales_av
+Age <- as.integer(format(Sys.Date(), "%Y")) - (as.integer(format(sales_av$BirthDate, format = "%Y")))
+sales_av <- add_column(sales_av, Age, .after = which(colnames(sales_av) == "BirthDate"))
+
+##Build histogram
+hist(sales_av$Age, xlab = "Idades", main = "Histograma de Idades")
+```
+
+
+-   **Análise de clientes com base no nº de crianças e carros que os clientes possuem**
+
+```{=html}
+<!-- -->
+```
+-   **Rendimento**
+
+```{r G3, eval = TRUE, echo = TRUE}
+par(mfrow=c(1,2))
+hist(clients_df_top100$YearlyIncome, xlab = "Income in thousand", ylab = "Number of clients",
+     main = "Best Clients Income", col = "lightblue")
+
+hist(sales_av$YearlyIncome, xlab = "Income in thousand", ylab = "Number of clients",
+    breaks = 10, main = "Clients Income", col ="lightblue")
+ 
+  
+
+```
+
+-   **Distribuição Geográfica dos Melhores 100 Clientes**
+
+```{r G4, eval = TRUE, echo = TRUE}
+vec_regions <- sort(unique(clients_df_top100$Region))
+avg_values <- list(country = vec_regions,
+                   avg_spending = c(),
+                   quantity = c())
+
+for (region in avg_values$country) {
+    countries <- subset(clients_df_top100, Region == region)
+    counter <- as.integer(length(countries$CustomerKey))
+    percentage_of_clients <- (counter / length(clients_df_top100$CustomerKey)) * 100
+    avg_spending <- round(mean(countries$SalesAmount))
+    #append to list
+    avg_values$avg_spending <- c(avg_values$avg_spending, avg_spending)
+    avg_values$quantity <- c(avg_values$quantity, percentage_of_clients)
+}
+remove(countries, counter, percentage_of_clients, avg_spending)
+
+best_clients_df <- as.data.frame(avg_values)
+best_clients_df$country <- as.factor(best_clients_df$country)
+
+best_clients_bar_colors <- c("#FEF9A7", "#37E2D5", "#C70A80", "#9BA3EB")
+sizeRange <- c(2,12)
+best_clients_bar <- ggplot(best_clients_df, aes(x = avg_spending, y = quantity,
+                                                size = quantity, color=country)) + 
+                    geom_point(alpha = 0.7) +
+                    scale_size(range = sizeRange) +
+                    labs(title = "Top Customers By Region", 
+                        x = "Gasto médio de Cliente", 
+                        y = "Concentração(em %)",
+                        color = "Países") 
+ggplotly(best_clients_bar)
+
+```
+
+Os melhores clientes estão situados na França, gastando em média 11200. A segunda região com os melhores clientes consiste na Alemanha, gastando em média 9063. Percebe-se que os melhores 100 clientes da empresa situam-se na Europa, seguindo-se do EUA.
 
 -   **Recomendações**
 
-
-§
-# Propostas para análise
-## Departamento de Marketing
-### Clientes
-#### Qual o perfil do nosso cliente mais rentável? E do menos rentável?
-#### Que variáveis dos clientes interferem positivamente no consumo das nossas bicicletas?
+§ \# Propostas para análise \## Departamento de Marketing \### Clientes \#### Qual o perfil do nosso cliente mais rentável? E do menos rentável? \#### Que variáveis dos clientes interferem positivamente no consumo das nossas bicicletas?
 
 ### Produto
+
 #### O que é que se vende mais? De que categoria? De que subcategoria?
 
-Nesta análise propõe-se avaliar as vendas da empresa numa abordagem *"general to detailed"* , de forma a que se desenhe uma perspetiva geral do desempenho, seguido de um estudo mais aprofundando, envolvendo as subcategorias das categorias principais. A análise terá foco tanto em quantidades
-como em valores monetários.
+Nesta análise propõe-se avaliar as vendas da empresa numa abordagem *"general to detailed"* , de forma a que se desenhe uma perspetiva geral do desempenho, seguido de um estudo mais aprofundando, envolvendo as subcategorias das categorias principais. A análise terá foco tanto em quantidades como em valores monetários.
 
 ### Por Categoria X Quantidades
-```{r G3, eval = TRUE, echo = TRUE}
+
+```{r G5, eval = TRUE, echo = TRUE}
 load("sales_product.Rda")
 plot(as.factor(sales_product$Category),
      main = "Category Sales Quantity",
@@ -137,9 +216,10 @@ plot(as.factor(sales_product$Category),
 ```
 
 Uma análise das categorias, quanto à quantidade de unidades vendidas. Pode ver-se que a categoria que mais vendeu foi a categoria dos acessórios, não obstante a sua venda apenas começar no ano de 2018, seguidamente a categoria das bicicletas e por fim a categoria de vestuário.
+
 ### Por Faturação
 
-```{r G4, eval = TRUE, echo = TRUE}
+```{r G6, eval = TRUE, echo = TRUE}
 load("sales_av.Rda")
 accs_sales_amount <- aggregate(SalesAmount ~ Category + salesYear, data = sales_av, 
                                 FUN = sum, na.rm = TRUE)
@@ -158,56 +238,104 @@ sales_amt_bar
 
 As categorias mais vendidas ao longo do período de 2016 - 2019, consistem na categoria bicicletas. Em 2018, começou-se a vender outras categorias de produtos, nomeadamente, roupas e acessórios. Ambas as categorias, apesar de ainda serem pouco transacionáveis, cresceram.
 
-
-
-
-
 ### Por Subcategorias mais vendidas
 
+#### Bicicletas
 
-```{r}
-##subs_sales_amount <- aggregate(SalesAmount ~ SubCategory + salesYear,
-##                             data = sales_av, FUN = sum, na.rm = TRUE)
+```{r G7, eval = TRUE, echo = TRUE}
 
-##subs_most_sales <- subs_sales_amount |> arrange(desc(SalesAmount)) |> head(5)
 
+bikes_subs_sales_amount <- aggregate(SalesAmount ~ SubCategory + salesYear,
+                               data = sales_av[sales_av$Category == "Bikes", ],
+                               FUN = sum, na.rm = TRUE)
+
+bikes_subs_most_sales_bar <- 
+     ggplot(bikes_subs_sales_amount, aes(fill = SubCategory, x = salesYear, y = SalesAmount/10^6)) +
+     geom_bar(position = "fill", stat = "identity") +
+    coord_flip() +
+     labs(title = "Bikes Subcategories by Percentage",
+          subtitle = " Years: 2016 to 2019",
+          x = "Year",
+          y = "Percentages of Sales") +
+     scale_y_continuous(labels = scales::percent) 
+ 
+bikes_subs_most_sales_bar
 
 ```
 
+No período de 2016 - 2019 é visível que a subcategoria mais transacionada consiste no Road Bikes. Contudo, esta tem vindo a perder expressão ao longo dos anos, evidenciando-se o crescimento da subcategoria Mountain Bikes. Nesta perspetiva, é possível verificar que a subcategoria Touring Bikes apenas começou a ser comercializada em 2018 e, apesar de não ter tanta expressão como as outras, tem vindo a crescer.
 
+#### Acessórios
 
-#### Os novos produtos estão a vender mais ou menos que os anteriores?
+```{r G8, eval = TRUE, echo = TRUE}
+ acc_subs_sales_amount <- aggregate(SalesAmount ~ SubCategory + salesYear,
+                               data = sales_av[sales_av$Category == "Accessories", ],
+                               FUN = sum, na.rm = TRUE)
+
+acc_subs_most_sales_bar <- 
+     ggplot(acc_subs_sales_amount, aes(fill = SubCategory, x = salesYear, y = SalesAmount/10^6)) +
+     geom_bar(position = "fill", stat = "identity") +
+     coord_flip() +
+     labs(title = "Accessories Subcategory by Percentage",
+          subtitle = " Years: 2018 to 2019",
+          x = "Year",
+          y = "Percentages of Sales") +
+     scale_y_continuous(labels = scales::percent) 
+acc_subs_most_sales_bar
+```
+
+Como evidenciado, a categoria acessórios apenas começou a ser comercializada em 2018, sendo que a subcategoria pneus e câmaras a mais comercializada. Segue-se os capacetes, garrafas e grades. As outras categorias têm pouca expressão a nível de percentagem de vendas. Evidencia-se o facto de, de forma geral, todas as subcategorias mantiveram a mesma percentagem de vendas, menos o suporte de bicicletas que diminuiu ligeiramente de 2018 para 2019
+
+#### Roupas
+
+```{r G9, eval = TRUE, echo = TRUE}
+ clothing_subs_sales_amount <- aggregate(SalesAmount ~ SubCategory + salesYear,
+                               data = sales_av[sales_av$Category == "Clothing", ],
+                               FUN = sum, na.rm = TRUE)
+
+clothing_subs_most_sales_bar <- 
+     ggplot(clothing_subs_sales_amount, aes(fill = SubCategory, x = salesYear, y = SalesAmount/10^6)) +
+     geom_bar(position = "fill", stat = "identity") +
+    coord_flip() +
+     labs(title = "Clothing Subcategory by Percentage",
+          subtitle = " Years: 2016 to 2019",
+          x = "Year",
+          y = "Percentages of Sales") +
+     scale_y_continuous(labels = scales::percent) 
+clothing_subs_most_sales_bar
+```
+
+Assim como os acessórios, a empresa apenas começou a comercializar roupas desde 2018. As t-shirts são líderes de vendas da categoria de roupas, seguindo-se os calções e as luvas. Nota-se que existiu um ligeiro crescimento da subcategoria coletes e uma diminuição pouco acentuada da subcategoria luvas, de 2018 para 2019.
 
 ### Região
+
 #### Onde é que se vendeu mais?
-#### Em que alturas é que se vende mais? Existe sazonalidade?
 
 ## Departamento de Vendas
+
 ### Análise de vendas por quarter e por ano
-```{r}
+
+```{r G10, eval = TRUE, echo = TRUE, fig.height = 7, fig.width = 4, fig.align = "left"}
 sales_quarters_years <- aggregate(SalesAmount ~ salesQuarter + salesYear, 
                                   data = sales_av, FUN = sum, na.rm = TRUE)
 
 salesAmount_quarter_year <- ggplot(sales_quarters_years, aes(x = factor(salesQuarter), y = SalesAmount/10^6)) +
-    geom_col(fill = "lightblue") + 
+    geom_col(fill = "lightblue", lwd = 1) + 
     facet_wrap(~ salesYear, nrow = 4) +
     labs(title = "Sales Amount by Quarters",
          subtitle = " Years: 2016 to 2019",
          x = "Quarters",
-         y = "Sales Amount")
+         y = "Sales Amount") 
 
 salesAmount_quarter_year
 
 ```
 
-Não existem dados de transações relativos aos 2 primeiros quarters de 2016 e os dois últimos de 2019.
-Existem flutuações entre quarters, sendo a tendência do volume de vendas de crescimento. É notável que o período entre o Q3- 2016 e o Q2- 2017, foi marcado por um crescimento, enquanto que no mesmo período dos anos seguintes (Q3- 2017 a Q2-2018), sofreu um decréscimo do volume de vendas. Esta tendência inverteu-se no período seguinte, sendo registado um crescimento.
-Acreditamos que, poderá existir um padrão de sazonalidade, que caso se repita, se refletirá num decréscimo do volume de vendas no próximo ano. Deverá existir um controlo mais rigoroso do volume de vendas para que este padrão possa ser identificado antecipadamente.
+Não existem dados de transações relativos aos 2 primeiros quarters de 2016 e os dois últimos de 2019. Existem flutuações entre quarters, sendo a tendência do volume de vendas de crescimento. É notável que o período entre o Q3- 2016 e o Q2- 2017, foi marcado por um crescimento, enquanto que no mesmo período dos anos seguintes (Q3- 2017 a Q2-2018), sofreu um decréscimo do volume de vendas. Esta tendência inverteu-se no período seguinte, sendo registado um crescimento. Acreditamos que, poderá existir um padrão de sazonalidade, que caso se repita, se refletirá num decréscimo do volume de vendas no próximo ano. Deverá existir um controlo mais rigoroso do volume de vendas para que este padrão possa ser identificado antecipadamente.
 
+### Por frequência de vendas de modo a saber períodos de tempo em que houve mais atividade
 
-### Por frequência de vendas de modo a saber períodos de tempo em que houve mais ativididade
-
-```{r}
+```{r G11, eval = TRUE, echo = TRUE}
 sales_period <- aggregate(SalesAmount ~ salesMonth + salesYear + salesMonthday, 
                       data = sales_av, FUN = mean, na.rm = TRUE)
 
@@ -225,7 +353,7 @@ sales_period_bar <- ggplot(sales_period, aes(x = as.integer(salesMonthday),
                                                   linetype = "dashed",
                                                   color = "red",
                                                   size = 0.2) +
-                                        geom_point(size = 0.3) + 
+                                        geom_point(size = 0.5) + 
                                         scale_x_continuous(breaks = c(1, 7, 15, 22, 31)) + 
                                         facet_grid(salesMonth ~ salesYear) + 
                                         labs(title = "Average Daily Sales", 
@@ -236,121 +364,192 @@ sales_period_bar <- ggplot(sales_period, aes(x = as.integer(salesMonthday),
 
 sales_period_bar
 ```
-O presente gráfico permite perceber as venda diárias em quatro dimensões temporais: vendas diárias, semanais, mensais e anuais.
-A linha vermelha representa o mínimo que a empresa necessita de vender por mês para se tornar rentável (1.500 doláres). 
 
-
-
+O presente gráfico permite perceber as venda diárias em quatro dimensões temporais: vendas diárias, semanais, mensais e anuais. A linha vermelha representa o mínimo que a empresa necessita de vender por mês para se tornar rentável (1.500 doláres).
 
 ## Departamento Financeiro
+
+### Margem
+
 ### Produto
+
 #### Saber quais são os produtos com maior rentabilidade?
+
+## Departamento de Gestão
+
+### Subcategorias mais vendidas
+
+#### Bicicletas
+
+```{r G12, eval = TRUE, echo = TRUE}
+
+
+bikes_subs_sales_amount <- aggregate(SalesAmount ~ SubCategory + salesYear,
+                               data = sales_av[sales_av$Category == "Bikes", ],
+                               FUN = sum, na.rm = TRUE)
+
+bikes_subs_most_sales_bar <- 
+     ggplot(bikes_subs_sales_amount, aes(fill = SubCategory, x = salesYear, y = SalesAmount/10^6)) +
+     geom_bar(position = "fill", stat = "identity") +
+    coord_flip() +
+     labs(title = "Bikes Subcategories by Percentage",
+          subtitle = " Years: 2016 to 2019",
+          x = "Year",
+          y = "Percentages of Sales") +
+     scale_y_continuous(labels = scales::percent) 
+ 
+bikes_subs_most_sales_bar
+
+```
+
+No período de 2016 - 2019 é visível que a subcategoria mais transacionada consiste no Road Bikes. Contudo, esta tem vindo a perder expressão ao longo dos anos, evidenciando-se o crescimento da subcategoria Mountain Bikes. Nesta perspetiva, é possível verificar que a subcategoria Touring Bikes apenas começou a ser comercializada em 2018 e, apesar de não ter tanta expressão como as outras, tem vindo a crescer.
+
+#### Acessórios
+
+```{r G13, eval = TRUE, echo = TRUE}
+ acc_subs_sales_amount <- aggregate(SalesAmount ~ SubCategory + salesYear,
+                               data = sales_av[sales_av$Category == "Accessories", ],
+                               FUN = sum, na.rm = TRUE)
+
+acc_subs_most_sales_bar <- 
+     ggplot(acc_subs_sales_amount, aes(fill = SubCategory, x = salesYear, y = SalesAmount/10^6)) +
+     geom_bar(position = "fill", stat = "identity") +
+     coord_flip() +
+     labs(title = "Accessories Subcategory by Percentage",
+          subtitle = " Years: 2018 to 2019",
+          x = "Year",
+          y = "Percentages of Sales") +
+     scale_y_continuous(labels = scales::percent) 
+acc_subs_most_sales_bar
+```
+
+Como evidenciado, a categoria acessórios apenas começou a ser comercializada em 2018, sendo que a subcategoria pneus e câmaras a mais comercializada. Segue-se os capacetes, garrafas e grades. As outras categorias têm pouca expressão a nível de percentagem de vendas. Evidencia-se o facto de, de forma geral, todas as subcategorias mantiveram a mesma percentagem de vendas, menos o suporte de bicicletas que diminuiu ligeiramente de 2018 para 2019
+
+#### Roupas
+
+```{r G14, eval = TRUE, echo = TRUE}
+ clothing_subs_sales_amount <- aggregate(SalesAmount ~ SubCategory + salesYear,
+                               data = sales_av[sales_av$Category == "Clothing", ],
+                               FUN = sum, na.rm = TRUE)
+
+clothing_subs_most_sales_bar <- 
+     ggplot(clothing_subs_sales_amount, aes(fill = SubCategory, x = salesYear, y = SalesAmount/10^6)) +
+     geom_bar(position = "fill", stat = "identity") +
+    coord_flip() +
+     labs(title = "Clothing Subcategory by Percentage",
+          subtitle = " Years: 2016 to 2019",
+          x = "Year",
+          y = "Percentages of Sales") +
+     scale_y_continuous(labels = scales::percent) 
+clothing_subs_most_sales_bar
+```
+
+Assim como os acessórios, a empresa apenas começou a comercializar roupas desde 2018. As t-shirts são líderes de vendas da categoria de roupas, seguindo-se os calções e as luvas. Nota-se que existiu um ligeiro crescimento da subcategoria coletes e uma diminuição pouco acentuada da subcategoria luvas, de 2018 para 2019.
 
 # Apêndice
 
-## Dicionário do __Data Mart__
+## Dicionário do **Data Mart**
 
-## 1.`calendar` 
+## 1.`calendar`
 
 Informação de calendário.
- 
- + **ID**: Constitui-se como a Surrogate Key (chave artificial).
- + **Date**: Contempla as datas ( dia, mês e ano) em que se realizaram transações (_date_)
- + **DayNumberOfWeek**:Identifica numericamente o dia da semana. (_numeric_)
- + **DayName**: Identifica textualmente o dia da semana. (_string_)
- + **MonthName**: Identifica textualmente o mês.(_string_)
- + **MonthNumberOfYear**: Identifica o mês numericamente.(_numeric_)
- + **DayNumberOfYear**: Identifica o dia do ano num formato de 365 dias. (_numeric_)
- + **WeekNumberOfYear**: Identifica a semana numericamente.(_numeric_)
- + **CalendarQuarter**: Refere o trimestre em que se realizou a transação. (_numeric_)
- + **CalendarYear**: Refere o ano.(_numeric_)
- + **DayNumberOfMonth**: Identifica o dia do mês.(_numeric_)
- 
+
+-   **ID**: Constitui-se como a Surrogate Key (chave artificial).
+-   **Date**: Contempla as datas ( dia, mês e ano) em que se realizaram transações (*date*)
+-   **DayNumberOfWeek**:Identifica numericamente o dia da semana. (*numeric*)
+-   **DayName**: Identifica textualmente o dia da semana. (*string*)
+-   **MonthName**: Identifica textualmente o mês.(*string*)
+-   **MonthNumberOfYear**: Identifica o mês numericamente.(*numeric*)
+-   **DayNumberOfYear**: Identifica o dia do ano num formato de 365 dias. (*numeric*)
+-   **WeekNumberOfYear**: Identifica a semana numericamente.(*numeric*)
+-   **CalendarQuarter**: Refere o trimestre em que se realizou a transação. (*numeric*)
+-   **CalendarYear**: Refere o ano.(*numeric*)
+-   **DayNumberOfMonth**: Identifica o dia do mês.(*numeric*)
+
 ## 2.`product`
 
 Informação sobre o produto.
- 
- + **ProductKey**: Chave que identifica o produto (_factor_).
- + **ProductSubCategoryKey**: Chave que identifica a sub-categoria do produto (_factor_).
- + **ProductName**: Nome do produto.(_string_)
- + **StandarCost**: Custo de fabrico. (_numeric_)
- + **Color**: Cor do produto. (_string_)
- + **SafetyStockLevel**: Stock mínimo.(_numeric_)
- + **ListPrice**: Preço de venda dos produtos. (_numeric_)
- + **Size**: Tamanho do produto.(_numeric_)
- + **DaysToManufacture**: Dias para produzir.(_numeric_)
- + **DealerPrice**: Preço de venda para revendedores.(_numeric_)
- + **Class**: Classe de produto.(_string_)
- + **ModelName**: Nome do modelo do produto.(_string_)
- + **Description**: Descrição do produto. (_string_)
- + **Status**: Disponibilidade para vender.(_string_)
- + **SubCategory**: Sub-categoria. (_string_)
- + **Category**: Categoria. (_string_)
- + **StartDate**: Desde quando o produto está disponível para vender.(_date_)
- + **EndDate**: Desde quando o produto deixou de estar disponivel para venda. (_date_)
- 
+
+-   **ProductKey**: Chave que identifica o produto (*factor*).
+-   **ProductSubCategoryKey**: Chave que identifica a sub-categoria do produto (*factor*).
+-   **ProductName**: Nome do produto.(*string*)
+-   **StandarCost**: Custo de fabrico. (*numeric*)
+-   **Color**: Cor do produto. (*string*)
+-   **SafetyStockLevel**: Stock mínimo.(*numeric*)
+-   **ListPrice**: Preço de venda dos produtos. (*numeric*)
+-   **Size**: Tamanho do produto.(*numeric*)
+-   **DaysToManufacture**: Dias para produzir.(*numeric*)
+-   **DealerPrice**: Preço de venda para revendedores.(*numeric*)
+-   **Class**: Classe de produto.(*string*)
+-   **ModelName**: Nome do modelo do produto.(*string*)
+-   **Description**: Descrição do produto. (*string*)
+-   **Status**: Disponibilidade para vender.(*string*)
+-   **SubCategory**: Sub-categoria. (*string*)
+-   **Category**: Categoria. (*string*)
+-   **StartDate**: Desde quando o produto está disponível para vender.(*date*)
+-   **EndDate**: Desde quando o produto deixou de estar disponivel para venda. (*date*)
+
 ## 3.`productCategory`
 
 Informação sobre a categoria do produto.
 
- + **ProductCategoryKey**: Chave que identifica univocamente o produto. (_factor_)
- + **EnglishProductCategoryName**: Nome da categoria do produto em Inglês.(_string_)
- + **SpanishProductCategoryName**: Nome da categoria do produto em Espanhol.(_string_)
- + **FrenchProductCategoryName**: Nome da categoria do produto em Francês.(_string_)
+-   **ProductCategoryKey**: Chave que identifica univocamente o produto. (*factor*)
+-   **EnglishProductCategoryName**: Nome da categoria do produto em Inglês.(*string*)
+-   **SpanishProductCategoryName**: Nome da categoria do produto em Espanhol.(*string*)
+-   **FrenchProductCategoryName**: Nome da categoria do produto em Francês.(*string*)
 
 ## 4.`productSubCategory`
 
 Informação sobre a sub-categoria do produto.
 
- + **ProductCategoryKey**: Chave que identifica univocamente o produto. (_factor_)
- + **ProductSubCategoryKey**: Chave que identifica a sub-categoria do produto (_factor_).
- + **EnglishProductSubCategoryName**: Nome da sub-categoria do produto em Inglês.(_string_)
- + **SpanishProductSubCategoryName**: Nome da sub-categoria do produto em Espanhol.(string_)
- + **FrenchProductSubCategoryName**: Nome da sub-categoria do produto em Francês. (_string_)
- 
+-   **ProductCategoryKey**: Chave que identifica univocamente o produto. (*factor*)
+-   **ProductSubCategoryKey**: Chave que identifica a sub-categoria do produto (*factor*).
+-   **EnglishProductSubCategoryName**: Nome da sub-categoria do produto em Inglês.(*string*)
+-   **SpanishProductSubCategoryName**: Nome da sub-categoria do produto em Espanhol.(string\_)
+-   **FrenchProductSubCategoryName**: Nome da sub-categoria do produto em Francês. (*string*)
+
 ## 5.`customers`
 
 Informação sobre os clientes.
 
- + **CustomerKey**: Chave que identifica o cliente.(_factor_)
- + **GeographyKey**: Chave que identifica a cidade/código-postal do cliente.(_factor_)
- + **Name**: Nome do cliente.(_string_)
- + **BirthDate**: Data de nascimento do cliente.(_date_)
- + **MaritalStatus**: Estado-civil do cliente.(_string_)
- + **Gender**: Género do Cliente. (_string_)
- + **YearlyIncome**: Nível de rendimento do cliente.(_numeric_)
- + **NumberChildrenAtHome**: Número de crianças do cliente.(_numeric_)
- + **Occupation**: Profissão do cliente.(_string_)
- + **HouseOwnerFlag**: Se o cliente é proprietário ou não de habitação. (_numeric_)
- + **NumberCarsOwned**: Quantos carros cliente possui.(_numeric_)
- + **AddressLine**: Morada do cliente. (_string_)
- + **Phone**: Número de telefone do cliente. (_numeric_)
- + **DateFirstPurchase**: Data da primeira compra. (_date_)
- 
+-   **CustomerKey**: Chave que identifica o cliente.(*factor*)
+-   **GeographyKey**: Chave que identifica a cidade/código-postal do cliente.(*factor*)
+-   **Name**: Nome do cliente.(*string*)
+-   **BirthDate**: Data de nascimento do cliente.(*date*)
+-   **MaritalStatus**: Estado-civil do cliente.(*string*)
+-   **Gender**: Género do Cliente. (*string*)
+-   **YearlyIncome**: Nível de rendimento do cliente.(*numeric*)
+-   **NumberChildrenAtHome**: Número de crianças do cliente.(*numeric*)
+-   **Occupation**: Profissão do cliente.(*string*)
+-   **HouseOwnerFlag**: Se o cliente é proprietário ou não de habitação. (*numeric*)
+-   **NumberCarsOwned**: Quantos carros cliente possui.(*numeric*)
+-   **AddressLine**: Morada do cliente. (*string*)
+-   **Phone**: Número de telefone do cliente. (*numeric*)
+-   **DateFirstPurchase**: Data da primeira compra. (*date*)
+
 ## 6.`territory`
 
 Informação geográfica.
 
- 
- + **Territory Key**: Chave que identifica o território. (_factor_)
- + **Region**: Região. (_string_)
- + **Country**: País. (_string_)
- + **Group**: Região económica. (_string_)
-  
+-   **Territory Key**: Chave que identifica o território. (*factor*)
+-   **Region**: Região. (*string*)
+-   **Country**: País. (*string*)
+-   **Group**: Região económica. (*string*)
+
 ## 7.`factsales`
 
 Tabela de factos [Vendas]
 
- + **OrderDateKey**: Chave que identifica a data da compra.(_factor_)
- + **ProductKey**: Chave que identifica o produto (_factor_).
- + **CustomerKey**: Chave que identifica o cliente.(_factor_)
- + **SalesTerritoryKey**: Chave que identifica o território onde se realizou a compra.(_factor_)
- + **SalesOrderNumber**: Número que identifica a venda.(_numeric_)
- + **SalesOrderLineNumber**: Número que identifica as transações numa venda. (_string_)
- + **OrderQuantity**: Quantidade transacionada. (_numeric_)
- + **UnitPrice**: Preço unitário. (_numeric_)
- + **ProductStandardCost**: O custo do produto para a empresa. (_numeric_)
- + **SalesAmount**: Preço da transação.(_numeric_)
- + **TaxAmt**: Imposto sobre a venda. (_numeric_)
- + **Freight**: Custo de envio. (_numeric_)
- + **RegionMonthID**: Informação sobre quando (mês) foi realizada a venda e em que região. (_factor_)
+-   **OrderDateKey**: Chave que identifica a data da compra.(*factor*)
+-   **ProductKey**: Chave que identifica o produto (*factor*).
+-   **CustomerKey**: Chave que identifica o cliente.(*factor*)
+-   **SalesTerritoryKey**: Chave que identifica o território onde se realizou a compra.(*factor*)
+-   **SalesOrderNumber**: Número que identifica a venda.(*numeric*)
+-   **SalesOrderLineNumber**: Número que identifica as transações numa venda. (*string*)
+-   **OrderQuantity**: Quantidade transacionada. (*numeric*)
+-   **UnitPrice**: Preço unitário. (*numeric*)
+-   **ProductStandardCost**: O custo do produto para a empresa. (*numeric*)
+-   **SalesAmount**: Preço da transação.(*numeric*)
+-   **TaxAmt**: Imposto sobre a venda. (*numeric*)
+-   **Freight**: Custo de envio. (*numeric*)
+-   **RegionMonthID**: Informação sobre quando (mês) foi realizada a venda e em que região. (*factor*)

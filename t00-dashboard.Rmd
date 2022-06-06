@@ -38,6 +38,7 @@ Consulte, por exemplo, o [**webinar**](https://www.rstudio.com/resources/webinar
 
 ### Transacções médias diárias
 ```{r grafTransac}
+#calculo margens
 df_agg3 <- aggregate(cbind(SalesAmount, ProductStandardCost) ~ salesYear + salesMonth + salesMonthday,
                      data = sales_av, 
                      FUN = sum, 
